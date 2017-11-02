@@ -21,3 +21,10 @@ of the project.
 
 Note: The project will only encompass movies and TV shows that are not part of streaming services
 (e.g. movies and shows from Netflix and Amazon will not be included). 
+
+### Python3 Packages
++ SpeechRecognition
++ gTTS
++ tmdbsimple
++ BeautifulSoup
++ tkinter
