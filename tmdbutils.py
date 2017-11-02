@@ -4,10 +4,12 @@ import config
 tmdb.API_KEY = config.API_KEY
 
 # Build the dictionary of genres so it is easier to get the ID later
-genre = tmdb.Genres()
-response = genre.list()
 genreIdMap = {}
 genreStringMap = {}
+
+genre = tmdb.Genres()
+response = genre.list()
+
 for item in response["genres"]: 
     genreIdMap[item["id"]] = item["name"]
     genreStringMap[item["name"]] = item["id"]
@@ -22,6 +24,22 @@ class Movie:
 
     def __init__(self, title, id, voteAverage, genres, overview, posterURL):
         self.title = title
+        self.id = id
+        self.voteAverage = voteAverage
+        self.overview = overview
+        self.posterURL += posterURL
+
+
+class Tv:
+    name = None
+    id = None
+    voteAverage = None
+    genres = []
+    overview = None
+    posterURL = "image.tmdb.org/t/p/w300"
+
+    def __init__(self, name, id, voteAverage, genres, overview, posterURL):
+        self.name = name
         self.id = id
         self.voteAverage = voteAverage
         self.overview = overview
@@ -76,9 +94,9 @@ def getPopularMovies(pageNum=1):
 # @return
 #   A list of 20 or less movie objects in descending popularity with the given genres
 # @error
-#   KeyError if the genre dotmdbdiscoveres not exist or the argument is not an array
+#   KeyError if the genre does not exist or the argument is not an array
 #   HttpError if the pageNum exceeds the actual number of results
-def getPopularMoviesByGenre(genreList=[], pageNum=1):
+def getPopularMoviesWithGenre(genreList=[], pageNum=1):
     tmdbdiscover = tmdb.Discover()
     genreQuery = ""
 
@@ -137,3 +155,92 @@ def getSimilarMoviesById(movieId):
         similarMovieList.append(Movie(item["title"], item["id"],item["vote_average"], item["genre_ids"], item["overview"], str(item["poster_path"])))
 
     return similarMovieList
+
+# @description
+#   Gets a list of popular Tv shows
+# @param
+#   pageNum(optional): The page of results to display, detauls to 1
+# @return
+#   A list of 20 or less Tv objects in descending popularity
+# @error
+#   HttpError if the pageNum exceeds the actual number of results
+def getPopularTv(pageNum=1):
+    tmdbtv = tmdb.TV()
+    response = tmdbtv.popular(page=pageNum)
+    popularTvList = []
+
+    for item in response["results"]:
+        popularTvList.append(Tv(item["name"], item["id"],item["vote_average"], item["genre_ids"], item["overview"], str(item["poster_path"])))
+
+    return popularTvList
+
+# @description
+#   Gets a list of popular Tv that contains the specified genres
+# @param
+#   genreList (required): a list of genre strings or IDs that has to be included in the search
+#   pageNum (optional): the page of results to display, defaults to 1
+# @return
+#   A list of 20 or less Tv objects in descending popularity with the given genres
+# @error
+#   KeyError if the genre does not exist or the argument is not an array
+#   HttpError if the pageNum exceeds the actual number of results
+def getPopularTvWithGenre(genreList=[], pageNum=1):
+    tmdbdiscover = tmdb.Discover()
+    genreQuery = ""
+
+    for genre in genreList:
+        # If the genre is a string, find the associated ID
+        if (isinstance(genre, str)):
+            genreId = getGenreId(genre)
+            genreQuery += str(genreId) + ","
+        else:
+            genreQuery += str(genre) + ","
+
+    # If the genreQuery is not empty (i.e. specific genres were given, remove the trailing comma)
+    if (genreQuery != ""):
+        genreQuery = genreQuery[:-1]
+
+    response = tmdbdiscover.tv(with_genres=genreQuery, page=pageNum)
+    popularTvListWithGenre = []
+
+    for item in response["results"]:
+        popularTvListWithGenre.append(Tv(item["name"], item["id"], item["vote_average"], item["genre_ids"], item["overview"], str(item["poster_path"])))
+    
+    return popularTvListWithGenre
+
+# @description
+#   Gets a list of Tv objects given some query
+# @param
+#   tv (required): a string query to search
+# @return
+#   A list of Tv shows that matches that given search terms
+# @error
+#   None
+def searchForTv(tv):
+    tmdbsearch = tmdb.Search()
+    response = tmdbsearch.tv(query=tv)
+    tvList =[]
+
+    # Grab all the IDs that match our search term
+    for item in response["results"]:
+        tvList.append(Tv(item["name"], item["id"],item["vote_average"], item["genre_ids"], item["overview"], str(item["poster_path"])))
+
+    return tvList
+
+# @description
+#   Gets a list of similar Tv shows given some id
+# @param
+#   tvId (required): The id associated with a Tv show
+# @return
+#   A list of Tv shows tmdb recognizes as similar to the movie passed
+# @error
+#   HttpError if the tvId does not exist
+def getSimilarTvById(tvId):
+    tmdbsim = tmdb.TV(tvId)
+    response = tmdbsim.similar()
+    similarTvList = []
+
+    for item in response["results"]:
+        similarTvList.append(Tv(item["name"], item["id"],item["vote_average"], item["genre_ids"], item["overview"], str(item["poster_path"])))
+
+    return similarTvList
