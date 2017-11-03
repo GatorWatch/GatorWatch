@@ -8,8 +8,14 @@ class MovieListing:
 
     def __init__(self, name, duration, times):
         self.name = name
-        self.duration = duration
-        self.times = times
+        self.duration = duration    # Contains more than movie length at the moment
+        self.times = times          # Show times
+
+    def DisplayData(self):
+        print("Movie name:", self.name)
+        print("Movie duration:", self.duration)
+        for time in self.times:
+            print("Time:", time)
 
 class Theater:
     name = ""
@@ -20,6 +26,13 @@ class Theater:
         self.name = name
         self.address = address
         self.movies = movies
+
+    def DisplayData(self):
+        print("Theater name:", self.name)
+        print("Theater address:", self.address)
+
+        for movie in self.movies:
+            movie.DisplayData()
 
 # Find movies in the area - return an array of Theaters
 def GetMovies():
@@ -53,8 +66,11 @@ def GetMovies():
             duration = duration.strip()
 
             showtimes = movie.find("div", {"class": "showtimes-list"}).findAll("span", {"class": "showtime-display"})
+            times = []
+            for time in showtimes:
+                times.append(time.text)
 
-            MovieObj = MovieListing(title,duration,showtimes)
+            MovieObj = MovieListing(title,duration,times)
             movie_list.append(MovieObj)
 
             '''
