@@ -105,3 +105,6 @@ config.py
 
 # trained models
 models/
+
+# local files
+local/

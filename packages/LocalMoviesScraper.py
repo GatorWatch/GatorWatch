@@ -89,3 +89,9 @@ def GetMovies():
     for theater in theaters:
         print(theater.name)
     '''
+
+def searchLocalMovies():
+    theaters = GetMovies()
+    for theater in theaters:
+        theater.DisplayData()
+        print("-------")

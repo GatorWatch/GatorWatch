@@ -104,3 +104,25 @@ def scrapeTV(search):
         shows.append(show)
 
     return shows
+
+def searchTVGuide(words):
+    words = words.split()
+    x = 2
+    search = ""
+    while x < len(words):
+        search += words[x]
+        x += 1
+        if x != len(words):
+            search += " "
+
+    listings = scrapeTV(search)
+    print(search)
+    print(len(listings))
+    for listing in listings:
+        print(listing.name)
+        print(listing.episode_name)
+        print(listing.episode)
+        print(listing.description)
+        print(listing.channel)
+        print(listing.time)
+        print("--------------")
