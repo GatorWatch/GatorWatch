@@ -22,7 +22,7 @@ def speechApp():
             userInput = r.recognize_google(audio)
 
             # Get the intent from a model
-            intent = nlu.determineIntent(value)
+            intent = nlu.determineIntent(userInput)
 
             # This shows the top 20 popular movies
             if (intent == "recommend_movie"):
@@ -30,19 +30,19 @@ def speechApp():
                 
             # Command: Search show [show name]
             elif (intent == "show_tv"):
-                GuideScraper.searchTVGuide(value)
+                GuideScraper.searchTVGuide(userInput)
 
             # Command: Search local movies
             elif (intent == "show_local"):
                 LocalMoviesScraper.searchLocalMovies()
 
             
-            print("You said {}".format(value))
-            T.insert(INSERT, "You said {}\n".format(value))
+            print("You said {}".format(userInput))
+            T.insert(INSERT, "You said {}\n".format(userInput))
 
             input("Waiting...")
         
-        except sr.UnknownValueError:
+        except sr.UnknownError:
             print("Oops! Didn't catch that")
             T.insert(INSERT, "Oops! Didn't catch that\n")
         except sr.RequestError as e:
