@@ -26,6 +26,9 @@ def speechApp(*args):
             # recognize speech using Google Speech Recognition
             userInput = r.recognize_google(audio)
 
+            print("You said {}".format(userInput))
+            T.insert(INSERT, "You said {}\n".format(userInput))
+
             # Get the intent from a model
             interpretation = nlu.getInterpretation(userInput)
             intent = interpretation["intent"]["name"]
@@ -60,7 +63,15 @@ def speechApp(*args):
 
             # Command: Search show [show name]
             elif (intent == "show_tv"):
-                GuideScraper.searchTVGuide(userInput)
+                listings = GuideScraper.searchTVGuide(userInput)
+                for listing in listings:
+                    T.insert(INSERT, "Name: " + listing.name + "\n")
+                    T.insert(INSERT, "Episode Name: " + listing.episode_name + "\n")
+                    T.insert(INSERT, "Episode: " + listing.episode + "\n")
+                    T.insert(INSERT, "Description: " + listing.description + "\n")
+                    T.insert(INSERT, "Channel: " + listing.channel + "\n")
+                    T.insert(INSERT, "Time: " + listing.time + "\n")
+                    T.insert(INSERT, "-----------------\n")
 
             # Command: Search local movies
             elif (intent == "show_local"):
@@ -74,9 +85,6 @@ def speechApp(*args):
                         for time in movie.times:
                             T.insert(INSERT, "Time: " + time + "\n")
                         T.insert(INSERT, "---------------\n")
-
-            print("You said {}".format(userInput))
-            T.insert(INSERT, "You said {}\n".format(userInput))
 
             input("Waiting...")
         
@@ -95,6 +103,7 @@ r = sr.Recognizer()
 m = sr.Microphone()
 root = Tk()
 T = Text(root, height=50, width=150)
+T.pack()
 
 print("A moment of silence, please...")
 # T.insert(INSERT, "A moment of silence, please...\n")
@@ -103,5 +112,6 @@ print("Set minimum energy threshold to {}".format(r.energy_threshold))
 # T.insert(INSERT, "Set minimum energy threshold to {}\n".format(r.energy_threshold))
 
 button = Button(T, text="Speak", command=speechApp)
+T.window_create(INSERT, window=button)
 #speechApp()
 root.mainloop()
