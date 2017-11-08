@@ -8,14 +8,19 @@ from tkinter import *
 import speech_recognition as sr
 import re
 
-def speechApp():
+def speechApp(*args):
     try:
+        '''
         print("Say something!")
         T.insert(INSERT, "Say something!\n")
+        '''
 
         with m as source: audio = r.listen(source)
+
+        '''
         print("Got it! Now to recognize it...")
         T.insert(INSERT, "Got it! Now to recognize it...\n")
+        '''
 
         try:
             # recognize speech using Google Speech Recognition
@@ -59,7 +64,16 @@ def speechApp():
 
             # Command: Search local movies
             elif (intent == "show_local"):
-                LocalMoviesScraper.searchLocalMovies()
+                theaters = LocalMoviesScraper.searchLocalMovies()
+                for theater in theaters:
+                    T.insert(INSERT, "Theater: " + theater.name + "\n")
+                    T.insert(INSERT, "Address: " + theater.address + "\n")
+                    for movie in theater.movies:
+                        T.insert(INSERT, "Movie Name: " + movie.name + "\n")
+                        T.insert(INSERT, "Duration: " + movie.duration + "\n")
+                        for time in movie.times:
+                            T.insert(INSERT, "Time: " + time + "\n")
+                        T.insert(INSERT, "---------------\n")
 
             print("You said {}".format(userInput))
             T.insert(INSERT, "You said {}\n".format(userInput))
@@ -68,10 +82,10 @@ def speechApp():
         
         except sr.UnknownError:
             print("Oops! Didn't catch that")
-            T.insert(INSERT, "Oops! Didn't catch that\n")
+            T.insert(INSERT, "GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n")
         except sr.RequestError as e:
             print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-            T.insert(INSERT, "Uh oh! Couldn't request results from Google Speech Recognition service; {0}\n".format(e))
+            T.insert(INSERT, "GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e))
         T.pack()
         root.after(200, speechApp)
     except KeyboardInterrupt:
@@ -81,11 +95,13 @@ r = sr.Recognizer()
 m = sr.Microphone()
 root = Tk()
 T = Text(root, height=50, width=150)
+
 print("A moment of silence, please...")
-T.insert(INSERT, "A moment of silence, please...\n")
+# T.insert(INSERT, "A moment of silence, please...\n")
 with m as source: r.adjust_for_ambient_noise(source)
 print("Set minimum energy threshold to {}".format(r.energy_threshold))
-T.insert(INSERT, "Set minimum energy threshold to {}\n".format(r.energy_threshold))
+# T.insert(INSERT, "Set minimum energy threshold to {}\n".format(r.energy_threshold))
 
-speechApp()
+button = Button(T, text="Speak", command=speechApp)
+#speechApp()
 root.mainloop()
