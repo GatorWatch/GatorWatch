@@ -88,7 +88,7 @@ def speechApp(*args):
 
             input("Waiting...")
         
-        except sr.UnknownError:
+        except sr.UnknownValueError:
             print("Oops! Didn't catch that")
             T.insert(INSERT, "GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n")
         except sr.RequestError as e:
