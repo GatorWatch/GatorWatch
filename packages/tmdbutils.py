@@ -6,6 +6,7 @@ tmdb.API_KEY = config.API_KEY
 # Build the dictionary of genres so it is easier to get the ID later
 genreIdMap = {}
 genreStringMap = {}
+genreStringList = []
 
 genre = tmdb.Genres()
 response = genre.list()
@@ -13,6 +14,7 @@ response = genre.list()
 for item in response["genres"]: 
     genreIdMap[item["id"]] = item["name"]
     genreStringMap[item["name"]] = item["id"]
+    genreStringList.append(item["name"].upper())
 
 class Movie:
     title = None
@@ -61,11 +63,22 @@ def getGenreId(genreString):
 # @param
 #   genreId: the id of a genre
 # @return
-#   A string that describes the genre
+#   A string that describes the genre in UPPERCASE
 # @error
 #   KeyError if the id is not in the mao
 def getGenreString(genreId):
     return genreIdMap[genreId]
+
+# @description
+#   Gets the list of genre strings such as Action, Comedy,...
+# @param
+#   void
+# @return
+#   A list of each genre as a string
+# @error
+#   None
+def getGenreStringList():
+    return genreStringList
 
 # @description
 #   Gets a list of popular movies as defined by tmdb

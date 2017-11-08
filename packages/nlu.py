@@ -2,7 +2,7 @@ from rasa_nlu.config import RasaNLUConfig
 from rasa_nlu.converters import load_data
 from rasa_nlu.model import Metadata, Interpreter
 
-interpreter = Interpreter.load("local/models/GatorWatch/default/model_20171106-093358", RasaNLUConfig("local/config_spacy.json"))
+interpreter = Interpreter.load("local/models/GatorWatch/default/gw_model", RasaNLUConfig("local/config_spacy.json"))
 
 # @description
 #   Give's rasa module our user input and get information about what 
