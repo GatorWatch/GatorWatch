@@ -22,12 +22,37 @@ def speechApp():
             userInput = r.recognize_google(audio)
 
             # Get the intent from a model
-            intent = nlu.determineIntent(userInput)
+            interpretation = nlu.getInterpretation(userInput)
+            intent = interpretation["intent"]["name"]
 
-            # This shows the top 20 popular movies
+            # Display list of popular moies
             if (intent == "recommend_movie"):
-                popularMovies = tmdbutils.getPopularMovies()
-                
+                # Attempt to extract genres from the user input
+                # If we find genres, do a search with that list
+                # Otherwise return the default popular list
+                entities = nlu.getEntities(interpretation)
+                userGenres = []
+
+                # Build the list of genres to include in our search
+                for item in entities:
+                    if (item["entitiy"] == "genre"):
+                        userGenres.append(item["value"])
+
+                # If no genres specified, do default search
+                if not userGenres:
+                    popularMovies = tmdbutils.getPopularMovies()
+                    # Do stuff with popularMovies 
+                else:
+                    popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
+                    # Do stuff with popularMoviesWithGenres
+
+
+            # Attempt to extract the movie or show name using rasa
+            # This is kind of hard right now without any training data
+            # elif (intent == "lookup_details"):
+            #     entities = nlu.getEntities(interpretation)
+            #     movieToLookup = entities[0]["value"]
+
             # Command: Search show [show name]
             elif (intent == "show_tv"):
                 GuideScraper.searchTVGuide(userInput)
@@ -36,7 +61,6 @@ def speechApp():
             elif (intent == "show_local"):
                 LocalMoviesScraper.searchLocalMovies()
 
-            
             print("You said {}".format(userInput))
             T.insert(INSERT, "You said {}\n".format(userInput))
 
