@@ -25,7 +25,7 @@ def speechApp():
             interpretation = nlu.getInterpretation(userInput)
             intent = interpretation["intent"]["name"]
 
-            # Display list of popular moies
+            # Display list of popular movies
             if (intent == "recommend_movie"):
                 # Attempt to extract genres from the user input
                 # If we find genres, do a search with that list
