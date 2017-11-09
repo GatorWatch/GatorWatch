@@ -116,6 +116,8 @@ def searchTVGuide(words):
             search += " "
 
     listings = scrapeTV(search)
+    return listings
+    '''
     print(search)
     print(len(listings))
     for listing in listings:
@@ -126,3 +128,4 @@ def searchTVGuide(words):
         print(listing.channel)
         print(listing.time)
         print("--------------")
+    '''
