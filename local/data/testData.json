@@ -1,0 +1,231 @@
+﻿{
+  "rasa_nlu_data": {
+    "common_examples": [
+      {
+        "text": "show me a movie",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "I want to see a movie",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "show me a horror movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 10,
+            "end": 16,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "show me a comedy movie",
+        "intent": "recommend_movie", 
+        "entities": [
+          {
+            "start": 10,
+            "end": 16,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "I'm looking for a funny movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 18,
+            "end": 23,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "show me local movies",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "what movies are playing near me",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "let me see a scary movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 18,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "whats on tv",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "what is playing on theaters now",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "show me more about stranger things",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 34,
+            "value": "stranger things",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "whats on tv right now",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "find me an action film",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "action",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "lookup a batman movie",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 9,
+            "end": 15,
+            "value": "batman",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "what's airing on tv",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "put on something romantic",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 17,
+            "end": 25,
+            "value": "romance",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "are there any good movies playing in theaters",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "is law and order playing right now",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 16,
+            "value": "law and order",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "tell me about Intersteller",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 15,
+            "end": 26,
+            "value": "Interstellar",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "what should I watch",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "whats the best movie out right now",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "I really want to see a documentary",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 23,
+            "end": 35,
+            "value": "documentary",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "how is that new Spiderman",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 16,
+            "end": 26,
+            "value": "Spiderman",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "show me popular movies",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "show me the top movies",
+        "intent": "recommend_movie",
+        "entities": []
+      },
+      {
+        "text": "show local movies",
+        "intent": "show_local",
+        "entities": []
+      }
+    ],
+    "entity_synonyms": [
+      {
+          "value": "movie",
+          "synonyms": ["Movie", "film", "flick"]  
+      },
+      {
+          "value": "tv_show",
+          "synonyms": ["TV,   tv show", "show", "tv episode", "episode"]
+      }
+    ],
+    "regex_features" : []
+  }
+}
