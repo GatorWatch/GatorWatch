@@ -6,13 +6,15 @@ class MovieListing:
     duration = ""
     times = []
 
-    def __init__(self, name, duration, times):
+    def __init__(self, name, rating, duration, times):
         self.name = name
+        self.rating = rating
         self.duration = duration    # Contains more than movie length at the moment
         self.times = times          # Show times
 
     def DisplayData(self):
         print("Movie name:", self.name)
+        print("Movie rating:", self.rating)
         print("Movie duration:", self.duration)
         for time in self.times:
             print("Time:", time)
@@ -64,13 +66,25 @@ def GetMovies():
             duration = duration.strip()
             duration = duration[:20]
             duration = duration.strip()
+            info = duration.split("|")
+            try:
+                rating = info[0]
+                rating = rating.strip()
+            except:
+                rating = "Unavailable"
+
+            try:
+                duration = info[1]
+                duration = duration.strip()
+            except:
+                duration = "Unknown"
 
             showtimes = movie.find("div", {"class": "showtimes-list"}).findAll("span", {"class": "showtime-display"})
             times = []
             for time in showtimes:
                 times.append(time.text)
 
-            MovieObj = MovieListing(title,duration,times)
+            MovieObj = MovieListing(title,rating,duration,times)
             movie_list.append(MovieObj)
 
             '''
@@ -84,17 +98,23 @@ def GetMovies():
         TheaterObj = Theater(theater_name, address, movie_list)
         theaters.append(TheaterObj)
 
-    return theaters
     '''
     for theater in theaters:
         print(theater.name)
     '''
 
+    return theaters
+
+
 def searchLocalMovies():
     theaters = GetMovies()
-    return theaters
     '''
     for theater in theaters:
         theater.DisplayData()
         print("-------")
     '''
+    return theaters
+
+theaters = searchLocalMovies()
+for theater in theaters:
+    theater.DisplayData()

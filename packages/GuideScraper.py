@@ -107,6 +107,9 @@ def scrapeTV(search):
 
 def searchTVGuide(words):
     words = words.split()
+
+    # Assumption is that the whole phrase is being passed through and not just the show
+    # Assumes that the user says: Search show [show_name]
     x = 2
     search = ""
     while x < len(words):
