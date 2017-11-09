@@ -11,10 +11,10 @@ import re
 
 def speechApp(*args):
     try:
-        
+
         print("Say something!")
         T.insert(INSERT, "Say something!\n")
-        
+
         with m as source: audio = r.listen(source)
 
         '''
@@ -92,7 +92,7 @@ def speechApp(*args):
             T.insert(INSERT, "You said {}\n".format(userInput))
 
             input("Waiting...")
-        
+
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
             T.insert(INSERT, "GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n")
@@ -104,7 +104,7 @@ def speechApp(*args):
     except KeyboardInterrupt:
         pass
 
-r = sr.Recognizer() 
+r = sr.Recognizer()
 m = sr.Microphone()
 root = Tk()
 T = Text(root, height=50, width=150)
@@ -116,7 +116,7 @@ engine.setProperty("rate", voiceSpeed + 15)
 engine.say("Hello, this is GatorWatch!")
 engine.say("You can say something like show me popular movies")
 engine.runAndWait()
-        
+
 # button = Button(T, text="Speak", command=speechApp)
 # T.window_create(INSERT, window=button)
 
