@@ -1,5 +1,5 @@
 import gtts as gTTS
-import playsound
+from playsound import playsound
 
 def generate():
     text = "Hello! I’m GatorWatch! If you need help about what you can do, ask!"

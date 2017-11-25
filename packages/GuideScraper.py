@@ -9,14 +9,16 @@ class ShowListing:
     episode = ""
     description = ""
     channel = ""
+    date = ""
     time = ""
 
-    def __init__(self, name, episode_name, episode, description, channel, time):
+    def __init__(self, name, episode_name, episode, description, channel, date, time):
         self.name = name
         self.episode_name = episode_name
         self.episode = episode
         self.description = description
         self.channel = channel
+        self.date = date
         self.time = time
 
 # Return an array of shows
@@ -92,15 +94,17 @@ def scrapeTV(search):
         # Find the show time (day and time)
         try:
             temp = listing.find("span", {"class": "airing-date-date"}).text
-            time = temp
+            date = temp
 
             temp = listing.find("span", {"class": "airing-date-time"}).text
-            time += " " + temp
+            time = temp
+
         except:
+            date = "N/A"
             time = "N/A"
 
         # Create ShowListing object with the information
-        show = ShowListing(name, episode_name, episode, description, channel, time)
+        show = ShowListing(name, episode_name, episode, description, channel, date, time)
         shows.append(show)
 
     return shows
@@ -120,15 +124,4 @@ def searchTVGuide(words):
 
     listings = scrapeTV(search)
     return listings
-    '''
-    print(search)
-    print(len(listings))
-    for listing in listings:
-        print(listing.name)
-        print(listing.episode_name)
-        print(listing.episode)
-        print(listing.description)
-        print(listing.channel)
-        print(listing.time)
-        print("--------------")
-    '''
+

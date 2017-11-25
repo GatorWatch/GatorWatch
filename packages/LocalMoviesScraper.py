@@ -115,6 +115,8 @@ def searchLocalMovies():
     '''
     return theaters
 
+'''
 theaters = searchLocalMovies()
 for theater in theaters:
     theater.DisplayData()
+'''
