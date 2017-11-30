@@ -1,5 +1,6 @@
 import datetime
 import time
+import os
 
 def write(speaker, utterance):
     text = speaker + ": " + utterance + "\r\n"
@@ -17,9 +18,17 @@ def end():
     f.close()
 
 # Create a text file which will hold dialogue
+arr = os.listdir()
 now = datetime.datetime.now()
 text = str(now.month) + "-" + str(now.day) + "-" + str(now.hour) + "-" + str(now.minute)
 text += ".txt"
+i = 0
+
+# Check to see if the file already exists - create a new file if so
+while text in arr:
+    text = str(now.month) + "-" + str(now.day) + "-" + str(now.hour) + "-" + str(now.minute) + "_" + str(i)
+    text += ".txt"
+    i += 1
 
 start_time = time.time()
 f = open(text,"w+")
