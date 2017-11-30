@@ -5,7 +5,6 @@ from packages import GuideScraper
 from packages import LocalMoviesScraper
 from packages import tmdbutils
 from packages import nlu
-import pyttsx3 as tts
 import speech_recognition as sr
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -79,6 +78,11 @@ class Ui_Form(object):
         self.infoScrollContents = QtWidgets.QWidget()
         self.infoScrollContents.setGeometry(QtCore.QRect(0, 0, 598, 843))
         self.infoScrollContents.setObjectName("infoScrollContents")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)    
+        self.verticalLayout_3.setObjectName("verticalLayout_3")            
+        self.infoLayout = QtWidgets.QVBoxLayout()            
+        self.infoLayout.setObjectName("infoLayout")            
+        self.verticalLayout_3.addLayout(self.infoLayout)
         self.infoScrollArea.setWidget(self.infoScrollContents)
         self.infoScrollLayout.addWidget(self.infoScrollArea)
         self.gridLayout.addLayout(self.infoScrollLayout, 0, 1, 1, 1)
@@ -110,16 +114,6 @@ class Ui_Form(object):
         self.msgScrollLayout.addWidget(self.msgScrollArea)
         self.gridLayout.addLayout(self.msgScrollLayout, 0, 0, 1, 1)
 
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Right side",left=False))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Right side",left=False))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         try:
@@ -143,11 +137,19 @@ class Ui_Form(object):
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
+                print(interpretation)
                 intent = interpretation["intent"]["name"]
+                confidence = interpretation["intent"]["confidence"]
+                entities = interpretation["entities"]
                 print("The intent was " + str(intent))
 
+                # TODO: Find a way to handle low confidence intents
+                if (confidence < 0.40):
+                    print("Sorry, could you rephrase that?")
+                    self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n"))
+
                 # Display list of popular movies
-                if (intent == "recommend_movie"):
+                elif (intent == "recommend_movie"):
                     # Attempt to extract genres from the user input
                     # If we find genres, do a search with that list
                     # Otherwise return the default popular list
@@ -166,17 +168,14 @@ class Ui_Form(object):
 
                     # If no genres specified, do default search
                     if not userGenres:
-                        engine.say("Here are some popular movies right now")
                         popularMovies = tmdbutils.getPopularMovies()
                         for movieItem in popularMovies:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
                     else:
-                        engine.say("Here are some popular movies with that genre")
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
 
-                    engine.runAndWait()
                 # Attempt to extract the movie or show name using rasa
                 # This is kind of hard right now without any training data
                 # elif (intent == "lookup_details"):
@@ -197,7 +196,6 @@ class Ui_Form(object):
 
                 # Command: Search local movies
                 elif (intent == "show_local"):
-                    engine.say("These are the movies playing near you")
                     theaters = LocalMoviesScraper.searchLocalMovies()
                     for theater in theaters:
                         self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
@@ -209,11 +207,6 @@ class Ui_Form(object):
                                 self.infoLayout.addWidget(MyWidget("Time: " + time + "\n"))
                             self.infoLayout.addWidget(MyWidget("---------------\n"))
 
-
-                    engine.runAndWait()
-
-                print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
                 input("Waiting...")
             
             except sr.UnknownValueError:
@@ -235,12 +228,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
     m = sr.Microphone()
-    engine = tts.init()
-    voiceSpeed = engine.getProperty("rate")
-    engine.setProperty("rate", voiceSpeed + 15)
-    engine.say("Hello, this is GatorWatch!")
-    engine.say("You can say something like show me popular movies")
-    engine.runAndWait()
     print("A moment of silence, please...")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))

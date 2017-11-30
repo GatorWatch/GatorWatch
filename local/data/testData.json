@@ -253,6 +253,274 @@
             "entity": "movie"
           }
         ]
+      },
+      {
+        "text": "yes",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "yep",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "yeah",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "indeed",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "that's right",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "ok",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "great",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "right, thank you",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "correct",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "great choice",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "sounds really good",
+        "intent": "affirm",
+        "entities": []
+      },
+      {
+        "text": "no",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "nope",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "no please",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "no thank you",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "not that",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "negative",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "not that one",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "that's not right",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "that's not it",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "that's incorrect",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "wrong",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "not that choice",
+        "intent": "deny",
+        "entities": []
+      },
+      {
+        "text": "help",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "commands",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what do I have scheduled",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "show me details about big hero 6",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 22,
+            "end": 32,
+            "value": "big hero 6",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "put it on there",
+        "intent": "add_to_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see the tv listings",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "is CSI playing soon",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 6,
+            "value": "CSI",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "remove it from my calendar",
+        "intent": "remove_from_calendar",
+        "entities": []
+      },
+      {
+        "text": "take it off",
+        "intent": "remove_from_calendar",
+        "entities": []
+      },
+      {
+        "text": "delete Thor from my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 7,
+            "end": 11,
+            "value": "Thor",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "what is a good drama",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 15,
+            "end": 20,
+            "value": "drama",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "is there a movie in a fantasy world",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 22,
+            "end": 29,
+            "value": "fantasy",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "my friends are looking for a thriller",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 29,
+            "end": 37,
+            "value": "thriller",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "bring me a war movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 14,
+            "value": "war",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "what about sci fi?",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "science fiction",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "throw up the tv listings",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "let me see if something is playing",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "tell me more about Indiana Jones",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 32,
+            "value": "Indiana Jones",
+            "entity": "movie"
+          }
+        ]
       }
     ],
     "entity_synonyms": [
@@ -271,6 +539,13 @@
           "show",
           "tv episode",
           "episode"
+        ]
+      },
+      {
+        "value": "science fiction",
+        "synonyms": [
+          "sci fi",
+          "scifi"
         ]
       }
     ],
