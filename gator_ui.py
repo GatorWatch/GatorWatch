@@ -9,7 +9,7 @@ import pyttsx3 as tts
 import speech_recognition as sr
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel,QPushButton
 from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 import sys
 
@@ -79,6 +79,11 @@ class Ui_Form(object):
         self.infoScrollContents = QtWidgets.QWidget()
         self.infoScrollContents.setGeometry(QtCore.QRect(0, 0, 598, 843))
         self.infoScrollContents.setObjectName("infoScrollContents")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)    
+        self.verticalLayout_3.setObjectName("verticalLayout_3")            
+        self.infoLayout = QtWidgets.QVBoxLayout()            
+        self.infoLayout.setObjectName("infoLayout")            
+        self.verticalLayout_3.addLayout(self.infoLayout)
         self.infoScrollArea.setWidget(self.infoScrollContents)
         self.infoScrollLayout.addWidget(self.infoScrollArea)
         self.gridLayout.addLayout(self.infoScrollLayout, 0, 1, 1, 1)
@@ -110,36 +115,33 @@ class Ui_Form(object):
         self.msgScrollLayout.addWidget(self.msgScrollArea)
         self.gridLayout.addLayout(self.msgScrollLayout, 0, 0, 1, 1)
 
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Right side",left=False))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Right side",left=False))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-        self.msgLayout.addWidget(MyWidget("Left side"))
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        self.speakBtn.clicked.connect(self.buttonClick)
+        self.speechApp()
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "GatorWatch"))
+        self.speakBtn.setText(_translate("Form", "Speak"))
+    def buttonClick(self):
+        self.speechApp()
+    def speechApp(self):
         try:
-            
+            engine.say("Hello, this is GatorWatch!")
+            engine.say("I can help you search for local movies, tv listings, or make a calender event.")
+            engine.runAndWait()
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
             
             with m as source: audio = r.listen(source)
-
-            '''
-            print("Got it! Now to recognize it...")
-            T.insert(INSERT, "Got it! Now to recognize it...\n")
-            '''
 
             try:
                 # recognize speech using Google Speech Recognition
                 userInput = r.recognize_google(audio)
 
                 print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput), left=False))
+                self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
@@ -167,6 +169,7 @@ class Ui_Form(object):
                     # If no genres specified, do default search
                     if not userGenres:
                         engine.say("Here are some popular movies right now")
+                        self.msgLayout.addWidget(MyWidget("Here are some popular movies right now"))
                         popularMovies = tmdbutils.getPopularMovies()
                         for movieItem in popularMovies:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
@@ -226,11 +229,6 @@ class Ui_Form(object):
         except KeyboardInterrupt:
             pass
 
-    def retranslateUi(self, Form):
-        _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "GatorWatch"))
-        self.speakBtn.setText(_translate("Form", "Speak"))
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
@@ -238,9 +236,6 @@ if __name__ == '__main__':
     engine = tts.init()
     voiceSpeed = engine.getProperty("rate")
     engine.setProperty("rate", voiceSpeed + 15)
-    engine.say("Hello, this is GatorWatch!")
-    engine.say("You can say something like show me popular movies")
-    engine.runAndWait()
     print("A moment of silence, please...")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))
