@@ -22,10 +22,12 @@ class ShowListing:
 
 
 # When the user wants to save a listing, save it to the calendar
-def loadCalendar(listing):
+def saveCalendar(listing):
     i = 2
     # Find an empty cell
     while ws.cell(row=i, column=1).value is not None:
+        if ws.cell(row=i, column=6).value == listing.date and ws.cell(row=i, column=7) == listing.time:
+            return False
         i += 1
 
     ws.cell(row=i, column=1).value = listing.name
@@ -36,6 +38,7 @@ def loadCalendar(listing):
     ws.cell(row=i, column=6).value = listing.date
     ws.cell(row=i, column=7).value = listing.time
     wb.save(filename="calendar_times.xlsx")
+    return True
 
 # Return array of all the saved listings
 def getCalendar():

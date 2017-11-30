@@ -8,7 +8,7 @@ from packages import nlu
 import speech_recognition as sr
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel,QPushButton
 from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 import sys
 
@@ -116,24 +116,28 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        self.speakBtn.clicked.connect(self.buttonClick)
+        self.speechApp()
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "GatorWatch"))
+        self.speakBtn.setText(_translate("Form", "Speak"))
+    def buttonClick(self):
+        self.speechApp()
+    def speechApp(self):
         try:
-            
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
             
             with m as source: audio = r.listen(source)
-
-            '''
-            print("Got it! Now to recognize it...")
-            T.insert(INSERT, "Got it! Now to recognize it...\n")
-            '''
 
             try:
                 # recognize speech using Google Speech Recognition
                 userInput = r.recognize_google(audio)
 
                 print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput), left=False))
+                self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
@@ -219,11 +223,6 @@ class Ui_Form(object):
         except KeyboardInterrupt:
             pass
 
-    def retranslateUi(self, Form):
-        _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "GatorWatch"))
-        self.speakBtn.setText(_translate("Form", "Speak"))
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
@@ -231,6 +230,9 @@ if __name__ == '__main__':
     print("A moment of silence, please...")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))
+    engine.say("Hello, this is GatorWatch!")
+    engine.say("I can help you search for local movies, tv listings, or make a calender event.")
+    engine.runAndWait()
     ex = App()
     ex.show()
     sys.exit(app.exec_())
