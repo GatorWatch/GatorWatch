@@ -25,7 +25,7 @@
       },
       {
         "text": "show me a comedy movie",
-        "intent": "recommend_movie", 
+        "intent": "recommend_movie",
         "entities": [
           {
             "start": 10,
@@ -159,9 +159,9 @@
         "intent": "lookup_details",
         "entities": [
           {
-            "start": 15,
+            "start": 14,
             "end": 26,
-            "value": "Interstellar",
+            "value": "Intersteller",
             "entity": "movie"
           }
         ]
@@ -214,18 +214,66 @@
         "text": "show local movies",
         "intent": "show_local",
         "entities": []
+      },
+      {
+        "text": "Is Star Trek on?",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 12,
+            "value": "Star Trek",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "pull up my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "what can you do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "add it to my calendar",
+        "intent": "add_to_calendar",
+        "entities": []
+      },
+      {
+        "text": "remove the lego movie from my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 7,
+            "end": 21,
+            "value": "the lego movie",
+            "entity": "movie"
+          }
+        ]
       }
     ],
     "entity_synonyms": [
       {
-          "value": "movie",
-          "synonyms": ["Movie", "film", "flick"]  
+        "value": "movie",
+        "synonyms": [
+          "Movie",
+          "film",
+          "flick"
+        ]
       },
       {
-          "value": "tv_show",
-          "synonyms": ["TV,   tv show", "show", "tv episode", "episode"]
+        "value": "tv_show",
+        "synonyms": [
+          "TV,   tv show",
+          "show",
+          "tv episode",
+          "episode"
+        ]
       }
     ],
-    "regex_features" : []
+    "regex_features": []
   }
 }

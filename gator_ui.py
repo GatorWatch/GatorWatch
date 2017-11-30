@@ -5,7 +5,6 @@ from packages import GuideScraper
 from packages import LocalMoviesScraper
 from packages import tmdbutils
 from packages import nlu
-from tkinter import *
 import pyttsx3 as tts
 import speech_recognition as sr
 import re
@@ -13,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 import sys
+
 class App(QWidget):
     def __init__(self):
         super().__init__()
@@ -125,10 +125,9 @@ class Ui_Form(object):
         try:
             
             print("Say something!")
-            self.msgLayout.addWidget(MyWidget("Say something!\n")
+            self.msgLayout.addWidget(MyWidget("Say something!\n"))
             
-            with m as source: 
-                audio = r.listen(source)
+            with m as source: audio = r.listen(source)
 
             '''
             print("Got it! Now to recognize it...")
@@ -140,7 +139,7 @@ class Ui_Form(object):
                 userInput = r.recognize_google(audio)
 
                 print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput), left=False)
+                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput), left=False))
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
@@ -170,12 +169,12 @@ class Ui_Form(object):
                         engine.say("Here are some popular movies right now")
                         popularMovies = tmdbutils.getPopularMovies()
                         for movieItem in popularMovies:
-                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n")
+                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
                     else:
                         engine.say("Here are some popular movies with that genre")
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
                         for movieItem in popularMoviesWithGenres:
-                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n")
+                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
 
                     engine.runAndWait()
                 # Attempt to extract the movie or show name using rasa
@@ -188,43 +187,42 @@ class Ui_Form(object):
                 elif (intent == "show_tv"):
                     listings = GuideScraper.searchTVGuide(userInput)
                     for listing in listings:
-                        self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n")
-                        self.infoLayout.addWidget(MyWidget("Episode Name: " + listing.episode_name + "\n")
-                        self.infoLayout.addWidget(MyWidget("Episode: " + listing.episode + "\n")
-                        self.infoLayout.addWidget(MyWidget("Description: " + listing.description + "\n")
-                        self.infoLayout.addWidget(MyWidget("Channel: " + listing.channel + "\n")
-                        self.infoLayout.addWidget(MyWidget("Time: " + listing.time + "\n")
-                        self.infoLayout.addWidget(MyWidget("-----------------\n")
+                        self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Episode Name: " + listing.episode_name + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Episode: " + listing.episode + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Description: " + listing.description + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Channel: " + listing.channel + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Time: " + listing.time + "\n"))
+                        self.infoLayout.addWidget(MyWidget("-----------------\n"))
 
                 # Command: Search local movies
                 elif (intent == "show_local"):
                     engine.say("These are the movies playing near you")
                     theaters = LocalMoviesScraper.searchLocalMovies()
                     for theater in theaters:
-                        self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n")
-                        self.infoLayout.addWidget(MyWidget("Address: " + theater.address + "\n")
+                        self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
+                        self.infoLayout.addWidget(MyWidget("Address: " + theater.address + "\n"))
                         for movie in theater.movies:
-                            self.infoLayout.addWidget(MyWidget("Movie Name: " + movie.name + "\n")
-                            self.infoLayout.addWidget(MyWidget("Duration: " + movie.duration + "\n")
+                            self.infoLayout.addWidget(MyWidget("Movie Name: " + movie.name + "\n"))
+                            self.infoLayout.addWidget(MyWidget("Duration: " + movie.duration + "\n"))
                             for time in movie.times:
-                                self.infoLayout.addWidget(MyWidget("Time: " + time + "\n")
-                            self.infoLayout.addWidget(MyWidget("---------------\n")
+                                self.infoLayout.addWidget(MyWidget("Time: " + time + "\n"))
+                            self.infoLayout.addWidget(MyWidget("---------------\n"))
 
 
                     engine.runAndWait()
 
                 print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput))
+                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
                 input("Waiting...")
             
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
-                self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n")
+                self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n"))
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-                self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e))
-            #T.pack()
-            #root.after(200, speechApp)
+                self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+            
         except KeyboardInterrupt:
             pass
 
@@ -244,10 +242,8 @@ if __name__ == '__main__':
     engine.say("You can say something like show me popular movies")
     engine.runAndWait()
     print("A moment of silence, please...")
-    # T.insert(INSERT, "A moment of silence, please...\n")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))
-    # T.insert(INSERT, "Set minimum energy threshold to {}\n".format(r.energy_threshold))
     ex = App()
     ex.show()
-    sys.exit(app.exec_()) 
+    sys.exit(app.exec_())
