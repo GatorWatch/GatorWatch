@@ -155,13 +155,13 @@
         ]
       },
       {
-        "text": "tell me about Intersteller",
+        "text": "tell me about Interstellar",
         "intent": "lookup_details",
         "entities": [
           {
             "start": 14,
             "end": 26,
-            "value": "Intersteller",
+            "value": "Interstellar",
             "entity": "movie"
           }
         ]
@@ -519,6 +519,18 @@
             "end": 32,
             "value": "Indiana Jones",
             "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "whats a good action movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 18,
+            "value": "action",
+            "entity": "genre"
           }
         ]
       }
