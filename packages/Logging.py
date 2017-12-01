@@ -3,7 +3,10 @@ import time
 import os
 
 def write(speaker, utterance):
-    text = speaker + ": " + utterance + "\r\n"
+    curr_time = time.time()
+    delta = float(curr_time) - float(start_time)
+    delta = str(delta)
+    text = speaker + ": " + utterance + " - " + delta + "\r\n"
     f.write(text)
 
 def end():

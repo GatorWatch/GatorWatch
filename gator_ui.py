@@ -181,9 +181,9 @@ class Ui_Form(object):
                         random.seed()
                         number = random.randint(0, len(popularMovies))
                         output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title])
+                        Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
-                        Logging.write("System", output)
 
                         for movieItem in popularMovies:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
@@ -206,8 +206,8 @@ class Ui_Form(object):
                     listings = GuideScraper.searchTVGuide(userInput)
                     #playsound()
                     #output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+                    # Logging.write("System", output)
                     #playsound("packages/audio_files/temp.mp3")
-                    #Logging.write("System", output)
 
                     for listing in listings:
                         self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
@@ -221,8 +221,8 @@ class Ui_Form(object):
                 # Command: Search local movies
                 elif (intent == "show_local"):
                     #engine.say("These are the movies playing near you")
-                    playsound("packages/audio_files/local_movies.mp3")
                     Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
+                    playsound("packages/audio_files/local_movies.mp3")
                     theaters = LocalMoviesScraper.searchLocalMovies()
                     for theater in theaters:
                         self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
@@ -244,8 +244,8 @@ class Ui_Form(object):
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
                 self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
-                playsound("packages/audio_files/misunderstood.mp3")
                 Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+                playsound("packages/audio_files/misunderstood.mp3")
 
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
@@ -261,20 +261,16 @@ if __name__ == '__main__':
     print("A moment of silence, please...")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))
-    playsound("packages/audio_files/start1.mp3")
+
     Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
-    #time.sleep(.10)
-    playsound("packages/audio_files/pre_survey.mp3")
-    Logging.write("System", "How strongly do you need to find any media today?")
+    playsound("packages/audio_files/start1.mp3")
 
-    # if the user responds positively, send positive response
-    # if the user responds negatively ,send negative response
-    # Logging.write("User", response)
-    # Logging.write("System", sys_response)
-
-    playsound("packages/audio_files/start2.mp3")
     Logging.write("System", "If you need help about with what you can do, ask!")
+    playsound("packages/audio_files/start2.mp3")
+
     ex = App()
-    ex.show()
-    sys.exit(app.exec_())
-    Logging.end()
+    try:
+        ex.show()
+        sys.exit(app.exec_())
+    finally:
+        Logging.end()
