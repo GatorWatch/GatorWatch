@@ -16,16 +16,3 @@ interpreter = Interpreter.load("local/models/GatorWatch/default/gw_model", RasaN
 #   TypeError if a string is not given
 def getInterpretation(input):
     return interpreter.parse(input)
-
-# @description
-#   Get the entities related to a user input
-# @param
-#   interpretation (required): the JSON object returned from getInterpretation()
-# @return
-#   A list of entity objects that contain the entity as well as actual value 
-#   from the user utterance
-# @error
-#   Type error if the argument is not the same format as
-#   the JSON object returned from getInterpretation()
-def getEntities(interpretation):
-    return interpretation["entities"]
