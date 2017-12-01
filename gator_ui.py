@@ -5,13 +5,17 @@ from packages import GuideScraper
 from packages import LocalMoviesScraper
 from packages import tmdbutils
 from packages import nlu
-import pyttsx3 as tts
 import speech_recognition as sr
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel,QPushButton
 from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 import sys
+from playsound import playsound
+import time
+from packages import GenerateAudio
+import random
+from packages import Logging
 
 class App(QWidget):
     def __init__(self):
@@ -124,8 +128,10 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "GatorWatch"))
         self.speakBtn.setText(_translate("Form", "Speak"))
+
     def buttonClick(self):
         self.speechApp()
+
     def speechApp(self):
         try:
             print("Say something!")
@@ -136,6 +142,7 @@ class Ui_Form(object):
             try:
                 # recognize speech using Google Speech Recognition
                 userInput = r.recognize_google(audio)
+                Logging.write("User", userInput)
 
                 print("You said {}".format(userInput))
                 self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
@@ -164,19 +171,30 @@ class Ui_Form(object):
 
 
                     # If no genres specified, do default search
+                    #playsound(popular_movies)
                     if not userGenres:
-                        engine.say("Here are some popular movies right now")
-                        self.msgLayout.addWidget(MyWidget("Here are some popular movies right now"))
+                        #engine.say("Here are some popular movies right now")
+                        #self.msgLayout.addWidget(MyWidget("Here are some popular movies right now"))
                         popularMovies = tmdbutils.getPopularMovies()
+
+                        # Pick a random movie to say
+                        random.seed()
+                        number = random.randint(0, len(popularMovies))
+                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title])
+                        self.msgLayout.addWidget(MyWidget(output))
+                        playsound("audio_files/temp.mp3")
+                        Logging.write("System", output)
+
                         for movieItem in popularMovies:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
                     else:
-                        engine.say("Here are some popular movies with that genre")
+                        #engine.say("Here are some popular movies with that genre")
+                        #Logging.write("System", "Here are some popular movies with that genre")
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
 
-                    engine.runAndWait()
+                    #engine.runAndWait()
                 # Attempt to extract the movie or show name using rasa
                 # This is kind of hard right now without any training data
                 # elif (intent == "lookup_details"):
@@ -186,6 +204,11 @@ class Ui_Form(object):
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     listings = GuideScraper.searchTVGuide(userInput)
+                    #playsound()
+                    #output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+                    #playsound("packages/audio_files/temp.mp3")
+                    #Logging.write("System", output)
+
                     for listing in listings:
                         self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
                         self.infoLayout.addWidget(MyWidget("Episode Name: " + listing.episode_name + "\n"))
@@ -197,7 +220,9 @@ class Ui_Form(object):
 
                 # Command: Search local movies
                 elif (intent == "show_local"):
-                    engine.say("These are the movies playing near you")
+                    #engine.say("These are the movies playing near you")
+                    playsound("packages/audio_files/local_movies.mp3")
+                    Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
                     theaters = LocalMoviesScraper.searchLocalMovies()
                     for theater in theaters:
                         self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
@@ -210,7 +235,7 @@ class Ui_Form(object):
                             self.infoLayout.addWidget(MyWidget("---------------\n"))
 
 
-                    engine.runAndWait()
+                    #engine.runAndWait()
 
                 print("You said {}".format(userInput))
                 self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
@@ -218,7 +243,10 @@ class Ui_Form(object):
             
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
-                self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n"))
+                self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
+                playsound("packages/audio_files/misunderstood.mp3")
+                Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
                 self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
@@ -230,15 +258,23 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
     m = sr.Microphone()
-    engine = tts.init()
-    voiceSpeed = engine.getProperty("rate")
-    engine.setProperty("rate", voiceSpeed + 15)
     print("A moment of silence, please...")
     with m as source: r.adjust_for_ambient_noise(source)
     print("Set minimum energy threshold to {}".format(r.energy_threshold))
-    engine.say("Hello, this is GatorWatch!")
-    engine.say("I can help you search for local movies, tv listings, or make a calender event.")
-    engine.runAndWait()
+    playsound("packages/audio_files/start1.mp3")
+    Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
+    #time.sleep(.10)
+    playsound("packages/audio_files/pre_survey.mp3")
+    Logging.write("System", "How strongly do you need to find any media today?")
+
+    # if the user responds positively, send positive response
+    # if the user responds negatively ,send negative response
+    # Logging.write("User", response)
+    # Logging.write("System", sys_response)
+
+    playsound("packages/audio_files/start2.mp3")
+    Logging.write("System", "If you need help about with what you can do, ask!")
     ex = App()
     ex.show()
     sys.exit(app.exec_())
+    Logging.end()
