@@ -26,6 +26,7 @@ def saveCalendar(listing):
     i = 2
     # Find an empty cell
     while ws.cell(row=i, column=1).value is not None:
+        # There is already an event at that time - cannot save the given event
         if ws.cell(row=i, column=6).value == listing.date and ws.cell(row=i, column=7) == listing.time:
             return False
         i += 1
