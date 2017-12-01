@@ -1,6 +1,7 @@
 from gtts import gTTS
 from playsound import playsound
 
+# Generate the preset audio files
 def generate_presets():
     language = "en"
 
@@ -8,7 +9,7 @@ def generate_presets():
     Start
     '''
 
-    text = "Hello! I’m GatorWatch - I help you find movies and TV shows!"
+    text = "Hello! I’m GatorWatch - I help find movies and TV shows!"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/start1.mp3")
     #playsound("audio_files/start1.mp3")
@@ -17,17 +18,17 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/start2.mp3")
 
-    text = "I'm a virtual assistant that can help you find movies and TV shows. If you need help about what you can do, ask!"
+    text = "I'm a virtual assistant that can help find movies and TV shows. You can ask for help any time!"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/intro.mp3")
     #playsound("audio_files/intro.mp3")
 
-    text = "You can ask for what’s showing around here, movie suggestions, or TV show information. You also have a calendar to store TV shows or movie events."
+    text = "You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/commands.mp3")
     #playsound("audio_files/commands.mp3")
 
-    text = "The calendar stores listings for TV shows and movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or movie showing to the calendar."
+    text = "The calendar stores listings for TV shows and movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or movie listing to the calendar."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/calendar.mp3")
     #playsound("audio_files/calendar.mp3")
@@ -102,34 +103,35 @@ def generate_presets():
     audio.save("audio_files/clear_calendar_no.mp3")
     #playsound("audio_files/clear_calendar_no.mp3")
 
-
+# Generates an audio file given the intent and entities
+# Returns a string of what the audio file says
 def generate(intent, entities):
     output = ""
     if intent == "lookup_details" and entities is not None:
-        output += scripts["movie_info"]
+        output += scripts["lookup_details"] # Name
         output += entities[0]
 
     elif intent == "show_tv" and entities is not None:
-        output += scripts["tv_info1"]
+        output += scripts["show_tv1"]
         output += entities[0]   # TV show name
-        output += scripts["tv_info2"]
+        output += scripts["show_tv2"]
         output += entities[1]   # time
-        output += scripts["tv_info3"]
+        output += scripts["show_tv3"]
 
     elif intent == "add_to_calendar" and entities is not None:
-        output += scripts["add_event1"]
+        output += scripts["add_to_calendar1"]
         output += entities[0]
-        output += scripts["remove_event2"]
+        output += scripts["add_to_calendar2"]
 
     elif intent == "remove_from_calendar" and entities is not None:
-        output += scripts["remove_event1"]
+        output += scripts["remove_from_calendar1"]
         output += entities[0]
-        output += scripts["remove_event2"]
+        output += scripts["remove_from_calendar2"]
 
     elif intent == "recommend_movie" and entities is not None:
-        output += scripts["popular_movie1"]
+        output += scripts["recommend_movie1"]
         output += entities[0]
-        output += scripts["popular_movie2"]
+        output += scripts["recommend_movie2"]
 
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
@@ -139,18 +141,18 @@ def generate(intent, entities):
 
 
 scripts = {}
-scripts["movie_info"] = "Okay, here's information about "
-scripts["popular_movie1"] = "Okay, here are some popular movies. "
-scripts["popular_movie2"] = " is a popular one. Do you want to know more about it?"
+scripts["lookup_details"] = "Okay, here's information about "
+scripts["recommend_movie1"] = "Okay, here are some popular movies. "
+scripts["recommend_movie2"] = " is a popular one. Do you want to know more about it?"
 scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
-scripts["tv_info1"] = "Okay, here are listings for "
-scripts["tv_info2"] = ". There is a showing at "
-scripts["tv_info3"] = ". Do you want to add it to your calendar?"
-scripts["add_event1"] = "Okay, "
-scripts["add_event2"] = " has been added to your calendar."
-scripts["remove_event1"] = "Okay, "
-scripts["remove_event2"] = " has been removed from your calendar."
+scripts["show_tv1"] = "Okay, here are listings for "
+scripts["show_tv2"] = ". There is a showing at "
+scripts["show_tv3"] = ". Do you want to add it to your calendar?"
+scripts["add_to_calendar1"] = "Okay, "
+scripts["add_to_calendar2"] = " has been added to your calendar."
+scripts["remove_from_calendar1"] = "Okay, "
+scripts["remove_from_calendar2"] = " has been removed from your calendar."
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")

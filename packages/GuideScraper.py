@@ -110,8 +110,6 @@ def scrapeTV(search):
     return shows
 
 def searchTVGuide(words):
-    # Assumption is that the whole phrase is being passed through and not just the show
-    # Assumes that the user says: Search show [show_name]
     listings = scrapeTV(words)
     return listings
 
