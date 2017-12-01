@@ -13,21 +13,6 @@ def generate_presets():
     audio.save("audio_files/start1.mp3")
     #playsound("audio_files/start1.mp3")
 
-    text = "How strongly do you need to find any media today?"
-    audio = gTTS(text=text, lang=language, slow=False)
-    audio.save("audio_files/pre_survey.mp3")
-    #playsound("audio_files/pre_survey.mp3")
-
-    text = "I will try my best to help you in your needs!"
-    audio = gTTS(text=text, lang=language, slow=False)
-    audio.save("audio_files/positive_response.mp3")
-    #playsound("audio_files/positive_response.mp3")
-
-    text = "Well, I hope I can still help you find new movies and TV shows!"
-    audio = gTTS(text=text, lang=language, slow=False)
-    audio.save("audio_files/negative_response.mp3")
-    #playsound("audio_files/negative_response.mp3")
-
     text = "If you need help about with what you can do, ask!"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/start2.mp3")
@@ -65,6 +50,10 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/no_internet.mp3")
     #playsound("audio_files/no_internet.mp3")
+
+    text = "Couldn't request results from Google Speech Recognition service."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/google_fail.mp3")
 
     '''
     Show movie/TV show

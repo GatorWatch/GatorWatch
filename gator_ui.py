@@ -204,10 +204,9 @@ class Ui_Form(object):
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     listings = GuideScraper.searchTVGuide(userInput)
-                    #playsound()
-                    #output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
-                    # Logging.write("System", output)
-                    #playsound("packages/audio_files/temp.mp3")
+                    output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+                    Logging.write("System", output)
+                    playsound("audio_files/temp.mp3")
 
                     for listing in listings:
                         self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
@@ -220,7 +219,6 @@ class Ui_Form(object):
 
                 # Command: Search local movies
                 elif (intent == "show_local"):
-                    #engine.say("These are the movies playing near you")
                     Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
                     playsound("packages/audio_files/local_movies.mp3")
                     theaters = LocalMoviesScraper.searchLocalMovies()
@@ -235,8 +233,6 @@ class Ui_Form(object):
                             self.infoLayout.addWidget(MyWidget("---------------\n"))
 
 
-                    #engine.runAndWait()
-
                 print("You said {}".format(userInput))
                 self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
                 input("Waiting...")
@@ -250,6 +246,8 @@ class Ui_Form(object):
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
                 self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+                Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+                playsound("packages/audio_files/google_fail.mp3")
             
         except KeyboardInterrupt:
             pass
