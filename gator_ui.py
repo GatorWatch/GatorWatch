@@ -177,6 +177,9 @@ class Ui_Form(object):
 
     def speechApp(self):
         global previousIntent
+        global theaters
+        global listings
+
         try:
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
@@ -341,64 +344,119 @@ class Ui_Form(object):
                         self.msgLayout.addWidget(MyWidget("Okay, what's the movie theater? The Hippodrome, Royal Park, or Butler Town?"))
                         playsound("packages/audio_files/movie_theater_question.mp3")
 
-                        theater = None
-                        # Get input and verify
+                        theater_name = None
+                        while True:
+                            theater_name = None
+                            # Get input and verify
 
-                        while theater is None:
-                            # print("What movie do you want to look up")
-                            theater = self.rerun()
+                            while theater_name is None:
+                                # print("What movie do you want to look up")
+                                theater = self.rerun()
 
-                        Logging.write("User", theater)
-                        self.msgLayout.addWidget(MyWidget(format(theater), left=False))
+                            Logging.write("User", theater_name)
+                            self.msgLayout.addWidget(MyWidget(format(theater_name), left=False))
 
-                        # Need to verify if theater is one of the three
+                            # Need to verify if theater is one of the three - if it isn't, keep asking the user
+                            if theater_name != "Hippodrome" or theater_name != "Royal Park" or theater_name != "Butler Town":
+                                Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town."))
+                                playsound("packages/audio_files/invalid_theater.mp3")
 
+                            break
 
-                        #print("Ask for movie")
-
+                        # Ask for movie name
                         movie_name = None
                         Logging.write("System", "And the movie name?")
                         self.msgLayout.addWidget(MyWidget("And the movie name?"))
                         playsound("packages/audio_files/movie_name_question.mp3")
 
-                        while movie_name is None:
-                            movie_name = self.rerun()
+                        while True:
+                            while movie_name is None:
+                                movie_name = self.rerun()
 
-                        Logging.write("User", movie_name)
-                        self.msgLayout.addWidget(MyWidget(format(movie_name), left=False))
+                            movie_exists = False
 
-                        # Need to verify if movie name exists
+                            Logging.write("User", movie_name)
+                            self.msgLayout.addWidget(MyWidget(format(movie_name), left=False))
 
-                        print("Ask for time")
+                            # Need to verify if movie name exists
+                            for theater in theaters:
+                                while theater_name != theater.name:
+                                    continue
+                                for movie in theater.movies:
+                                    # Might need to tokenize movie_name
+                                    if movie_name in movie.name:
+                                        #print("Movie exists")
+                                        movie_exists = True
+                                        break
+
+                            if movie_exists:
+                                break
+
+                            else:
+                                Logging.write("System", "I'm sorry, that movie does not exist. Please state one on the list.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, that movie does not exist. Please state one on the list."))
+                                playsound("packages/audio_files/invalid_movie_name.mp3")
+                                #print("Movie does not exist")
+
+                        # Ask for time
 
                         movie_time = None
                         Logging.write("System", "And the time of the movie?")
                         self.msgLayout.addWidget(MyWidget("And the time of the movie?"))
                         playsound("packages/audio_files/movie_time_question.mp3")
 
-                        while movie_time is None:
-                            movie_time = self.rerun()
+                        while True:
+                            while movie_time is None:
+                                movie_time = self.rerun()
 
-                        Logging.write("User", movie_time)
-                        self.msgLayout.addWidget(MyWidget(format(movie_time), left=False))
+                            Logging.write("User", movie_time)
+                            self.msgLayout.addWidget(MyWidget(format(movie_time), left=False))
 
-                        # Verify if listing exists
+                            movie_time_exists = False
 
-                        print("Confirm")
-                        output = GenerateAudio.generate("confirm_movie", entities=[theater, movie_name, movie_time])
+                            # Verify if listing exists
+                            for theater in theaters:
+                                while theater_name != theater.name:
+                                    continue
+                                for movie in theater.movies:
+                                    # Might need to tokenize movie_name
+                                    if movie_name in movie.name:
+                                        # search times
+                                        for start_time in movie.times:
+
+                                            # Need to check with this - ASR might not detect times properly
+                                            if movie_time == start_time:
+                                                movie_time_exists = True
+                                                break
+                                        break
+
+                            if movie_time_exists:
+                                break
+
+                            else:
+                                #print("Err")
+                                Logging.write("User", "That time is not available. Please state one on the list.")
+                                self.msgLayout.addWidget(MyWidget("That time is not available. Please state one on the list."))
+                                playsound("packages/audio_files/invalid_movie_time.mp3")
+                                # Movie time does not exist
+
+                        #print("Confirm")
+                        output = GenerateAudio.generate("confirm_movie", entities=[theater_name, movie_name, movie_time])
                         Logging.write("System", output)
+                        playsound("audio_files/temp.mp3")
 
                         userInput = None
                         while userInput is None:
                             userInput = self.rerun()
-                            # Need to find intent
+
+                        # Need to find intent
+                        interpretation = nlu.getInterpreation(userInput)
+                        intent = interpretation["intent"]["name"]
+                        # Incorporate confidence here
 
                         if intent == "affirm":
-                            #print("Add to calendar")
-                            Logging.write("System", "Okay, it has been added to your calendar. You will be reminded about it 30 minutes before the event.")
-                            self.msgLayout.addWidget(MyWidget("Okay, it has been added to your calendar. You will be reminded about it 30 minutes before the event."))
-                            playsound("packages/audio_files/add_to_calendar.mp3")
-
+                            # Add to calendar
                             # Calculate current date
                             months = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
                             now = datetime.datetime.now()
@@ -412,8 +470,18 @@ class Ui_Form(object):
                             date += month + " " + day
 
                             listing = ShowListing(movie_name, "", "", "", theater, date, movie_time)
-                            CalendarSystem.saveCalendar()
+                            saved = CalendarSystem.saveCalendar(listing)
 
+                            if saved == "True":
+                                Logging.write("System","Okay, it has been added to your calendar. I will remind you about it 30 minutes before the event.")
+                                self.msgLayout.addWidget(MyWidget("Okay, it has been added to your calendar. I will remind you about it 30 minutes before the event."))
+                                playsound("packages/audio_files/add_to_calendar.mp3")
+
+                            else:
+                                output = GenerateAudio.generate("calendar_overlap", entities=[saved])
+                                Logging.write("System", output)
+                                self.msgLayout.addWidget(MyWidget(output))
+                                playsound("audio_files/temp.mp3")
 
                         else:
                             print("Do you want to change the theater, movie name, time, or cancel the event?")
@@ -428,6 +496,9 @@ class Ui_Form(object):
                             print("OK")
                         else:
                             print("Do you want to change the show name, time, or cancel the event?")
+
+                    else:
+                        print("Cannot do that")
 
                 elif intent == "remove_from_calendar":
                     if previousIntent == "view_calendar":
@@ -444,20 +515,21 @@ class Ui_Form(object):
                         print("Cannot do that")
 
                 elif intent == "show_instructions":
-                    print("play instr")
+                    Logging.write("System", "You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events.")
+                    self.msgLayout.addWidget(MyWidget("You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."))
 
                 previousIntent = intent
             
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
-                self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
+                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
                 Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
                 playsound("packages/audio_files/misunderstood.mp3")
 
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-                self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
-                Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+                self.msgLayout.addWidget(MyWidget("Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+                Logging.write("System", "Couldn't request results from Google Speech Recognition service.")
                 playsound("packages/audio_files/google_fail.mp3")
             
         except KeyboardInterrupt:
@@ -476,6 +548,9 @@ if __name__ == '__main__':
 
     Logging.write("System", "If you need help about with what you can do, ask!")
     playsound("packages/audio_files/start2.mp3")
+
+    theaters = []
+    listings = []
 
     previousIntent = None
 

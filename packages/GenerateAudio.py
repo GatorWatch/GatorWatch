@@ -105,9 +105,26 @@ def generate_presets():
     audio.save("audio_files/clear_calendar_no.mp3")
     #playsound("audio_files/clear_calendar_no.mp3")
 
-    text = "Okay, it has been added to your calendar. You will be reminded about it 30 minutes before the event."
+    text = "Okay, it has been added to your calendar. I will remind you about it 30 minutes before the event."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/add_to_calendar.mp3")
+
+    '''
+    Calendar Corrections
+    '''
+    text = "I'm sorry, that theater is not in Gainesville. "
+    text += "The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_theater.mp3")
+
+    text = "I'm sorry, that movie does not exist. Please state one on the list."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_movie_name.mp3")
+
+    text = "That time is not available. Please state one on the list."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_movie_time.mp3")
+
 
     '''
     Restrictive prompts
@@ -185,6 +202,11 @@ def generate(intent, entities):
         output += scripts["confirm_movie3"]
         output += entities[2]   # Time
 
+    elif intent == "calendar_overlap" and entities is not None:
+        output += scripts["calendar_overlap1"]
+        output += entities[0]   # Event name
+        output += scripts["calendar_overlap2"]
+
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
     audio.save("audio_files/temp.mp3")
@@ -210,6 +232,8 @@ scripts["confirm_movie2"] = " to see "
 scripts["confirm_movie3"] = " at "
 scripts["confirm_show"] = ""
 scripts["no_tv_shows"] = "I'm sorry, I couldn't find anything about "
+scripts["calendar_overlap1"] = "There is already an event to watch "
+scripts["calendar_overlap2"] = " at that time! I cannot save this event"
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")
