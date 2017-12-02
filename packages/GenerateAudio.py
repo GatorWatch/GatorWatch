@@ -80,6 +80,8 @@ def generate_presets():
     audio.save("audio_files/local_movies.mp3")
     #playsound("audio_files/local_movies.mp3")
 
+
+
     '''
     Calendar
     '''
@@ -102,6 +104,61 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/clear_calendar_no.mp3")
     #playsound("audio_files/clear_calendar_no.mp3")
+
+    text = "Okay, it has been added to your calendar. I will remind you about it 30 minutes before the event."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/add_to_calendar.mp3")
+
+    '''
+    Calendar Corrections
+    '''
+    text = "I'm sorry, that theater is not in Gainesville. "
+    text += "The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_theater.mp3")
+
+    text = "I'm sorry, that movie does not exist. Please state one on the list."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_movie_name.mp3")
+
+    text = "That time is not available. Please state one on the list."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_movie_time.mp3")
+
+
+    '''
+    Restrictive prompts
+    '''
+
+    text = "Okay, what show do you want to look up?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/show_tv_question.mp3")
+
+    text = "Okay, what do you want to search for?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/lookup_details_question.mp3")
+
+    text = "Okay, what's the movie theater? The Hippodrome, Royal Park, or Butler Town?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/movie_theater_question.mp3")
+
+    text = "And the movie name?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/movie_name_question.mp3")
+
+    text = "And the time of the movie?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/movie_time_question.mp3")
+
+    text = "Okay, what's the the name of the show"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/show_name_question.mp3")
+
+    text = "And the time of the show?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/show_time_question.mp3")
+
+
 
 # Generates an audio file given the intent and entities
 # Returns a string of what the audio file says
@@ -133,6 +190,23 @@ def generate(intent, entities):
         output += entities[0]
         output += scripts["recommend_movie2"]
 
+    elif intent == "no_tv_shows" and entities is not None:
+        output += scripts["no_tv_shows"]
+        output += entities[0]
+
+    elif intent == "confirm_movie" and entities is not None:
+        output += scripts["confirm_movie1"]
+        output += entities[0]   # Theater
+        output += scripts["confirm_movie2"]
+        output += entities[1]   # Movie name
+        output += scripts["confirm_movie3"]
+        output += entities[2]   # Time
+
+    elif intent == "calendar_overlap" and entities is not None:
+        output += scripts["calendar_overlap1"]
+        output += entities[0]   # Event name
+        output += scripts["calendar_overlap2"]
+
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
     audio.save("audio_files/temp.mp3")
@@ -143,7 +217,7 @@ def generate(intent, entities):
 scripts = {}
 scripts["lookup_details"] = "Okay, here's information about "
 scripts["recommend_movie1"] = "Okay, here are some popular movies. "
-scripts["recommend_movie2"] = " is a popular one. Do you want to know more about it?"
+scripts["recommend_movie2"] = " is a popular one."
 scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
 scripts["show_tv1"] = "Okay, here are listings for "
@@ -153,6 +227,13 @@ scripts["add_to_calendar1"] = "Okay, "
 scripts["add_to_calendar2"] = " has been added to your calendar."
 scripts["remove_from_calendar1"] = "Okay, "
 scripts["remove_from_calendar2"] = " has been removed from your calendar."
+scripts["confirm_movie1"] = "Okay, so an event at the "
+scripts["confirm_movie2"] = " to see "
+scripts["confirm_movie3"] = " at "
+scripts["confirm_show"] = ""
+scripts["no_tv_shows"] = "I'm sorry, I couldn't find anything about "
+scripts["calendar_overlap1"] = "There is already an event to watch "
+scripts["calendar_overlap2"] = " at that time! I cannot save this event"
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")

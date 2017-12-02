@@ -50,6 +50,18 @@ def GetMovies():
 
     for theater in results:
         theater_name = theater.find("a", {"class": "theater-name"}).text
+        theater_name = theater_name.strip()
+        allowed_theaters = ["Hippodrome Theatre", "Regal Royal Park Stadium 16", "Regal Butler Town Center 14"]
+        if theater_name not in allowed_theaters:
+            continue
+
+        if theater_name == allowed_theaters[0]:
+            theater_name = "Hippodrome"
+        elif theater_name == allowed_theaters[1]:
+            theater_name = "Royal Park"
+        elif theater_name == allowed_theaters[2]:
+            theater_name = "Butler Town"
+
         address = theater.find("p", {"class": "address"}).find("a").text
 
         movies = theater.findAll("div", {"class": "movie-data-wrap"})

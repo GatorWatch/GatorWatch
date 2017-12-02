@@ -28,7 +28,7 @@ def saveCalendar(listing):
     while ws.cell(row=i, column=1).value is not None:
         # There is already an event at that time - cannot save the given event
         if ws.cell(row=i, column=6).value == listing.date and ws.cell(row=i, column=7) == listing.time:
-            return False
+            return ws.cell(row=i,column=1).value
         i += 1
 
     ws.cell(row=i, column=1).value = listing.name
@@ -39,7 +39,7 @@ def saveCalendar(listing):
     ws.cell(row=i, column=6).value = listing.date
     ws.cell(row=i, column=7).value = listing.time
     wb.save(filename="calendar_times.xlsx")
-    return True
+    return "True"   # Returning a string of True in case there is an issue with equality operators
 
 # Return array of all the saved listings
 def getCalendar():
