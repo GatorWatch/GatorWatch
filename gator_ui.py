@@ -8,7 +8,7 @@ from packages import nlu
 import speech_recognition as sr
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel,QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel,QPushButton, QAction, QTableWidget,QTableWidgetItem
 from PyQt5.QtGui import QPainter, QColor, QPen, QPalette
 import sys
 from playsound import playsound
@@ -27,6 +27,8 @@ class Bubble(QtWidgets.QLabel):
     def __init__(self,text):
         super(Bubble,self).__init__(text)
         self.setContentsMargins(5,5,5,5)
+        self.setWordWrap(True)
+        self.setSizePolicy
 
     def paintEvent(self, e):
 
@@ -86,7 +88,16 @@ class Ui_Form(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)    
         self.verticalLayout_3.setObjectName("verticalLayout_3")            
         self.infoLayout = QtWidgets.QVBoxLayout()            
-        self.infoLayout.setObjectName("infoLayout")            
+        self.infoLayout.setObjectName("infoLayout")
+        self.tableWidget = QtWidgets.QTableWidget(self.infoScrollContents)
+        self.tableWidget.setAutoFillBackground(True)
+        self.tableWidget.setStyleSheet("background-color: rgb(107, 122, 143);")
+        self.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
+        self.tableWidget.setRowCount(500)
+        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setObjectName("tableWidget")
+        self.infoLayout.addWidget(self.tableWidget)            
         self.verticalLayout_3.addLayout(self.infoLayout)
         self.infoScrollArea.setWidget(self.infoScrollContents)
         self.infoScrollLayout.addWidget(self.infoScrollArea)
@@ -122,6 +133,9 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.speakBtn.clicked.connect(self.buttonClick)
+        self.currRow = 0
+        #variable to know which table header to print 0=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
+        self.tableMode= 0
         self.speechApp()
 
     def retranslateUi(self, Form):
@@ -136,6 +150,7 @@ class Ui_Form(object):
         try:
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
+
             
             with m as source: audio = r.listen(source)
 
@@ -154,6 +169,26 @@ class Ui_Form(object):
 
                 # Display list of popular movies
                 if (intent == "recommend_movie"):
+                    if (self.currRow == 499):
+                        self.tableWidget.clear()
+                        self.currRow = 0
+                        if (self.tableMode != 0):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
+                            self.currRow+=1
+                            self.tableMode = 0
+                    else:    
+                        if (self.tableMode != 0):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
+                            self.currRow+=1
+                            self.tableMode = 0
+
+
                     # Attempt to extract genres from the user input
                     # If we find genres, do a search with that list
                     # Otherwise return the default popular list
@@ -184,17 +219,45 @@ class Ui_Form(object):
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
                         Logging.write("System", output)
-
-                        for movieItem in popularMovies:
-                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
+                        itemLength = len(popularMovies)
+                        if (itemLength+self.currRow <= 499):
+                            for movieItem in popularMovies:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        else:
+                            self.tableWidget.clear()
+                            self.currRow = 0
+                            for movieItem in popularMovies:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
                     else:
                         #engine.say("Here are some popular movies with that genre")
                         #Logging.write("System", "Here are some popular movies with that genre")
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
-                        for movieItem in popularMoviesWithGenres:
-                            self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
+                        itemLength = len(popularMoviesWithGenres)
+                        if (itemLength+self.currRow <= 499):
+                            for movieItem in popularMoviesWithGenres:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        else:
+                            self.tableWidget.clear()
+                            self.currRow = 0
+                            for movieItem in popularMoviesWithGenres:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
 
-                    #engine.runAndWait()
                 # Attempt to extract the movie or show name using rasa
                 # This is kind of hard right now without any training data
                 # elif (intent == "lookup_details"):
@@ -203,42 +266,118 @@ class Ui_Form(object):
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
+                    if (self.currRow == 499):
+                        self.tableWidget.clear()
+                        self.currRow = 0
+                        if (self.tableMode != 2):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Episode #"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Description"))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Channel"))
+                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem("Date"))
+                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
+                            self.currRow+=1
+                            self.tableMode = 2
+                    else:    
+                        if (self.tableMode != 2):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Episode #"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Description"))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Channel"))
+                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem("Date"))
+                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
+                            self.currRow+=1
+                            self.tableMode = 2
                     listings = GuideScraper.searchTVGuide(userInput)
                     #playsound()
                     #output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
                     #playsound("packages/audio_files/temp.mp3")
                     #Logging.write("System", output)
-
-                    for listing in listings:
-                        self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Episode Name: " + listing.episode_name + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Episode: " + listing.episode + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Description: " + listing.description + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Channel: " + listing.channel + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Time: " + listing.time + "\n"))
-                        self.infoLayout.addWidget(MyWidget("-----------------\n"))
+                    itemLength = len(listings)
+                    if(itemLength+self.currRow <= 499):
+                        for listing in listings:
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
+                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
+                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
+                            self.currRow+=1
+                    else:
+                        self.tableWidget.clear()
+                        self.currRow = 0
+                        for listing in listings:
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
+                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
+                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
+                            self.currRow+=1
 
                 # Command: Search local movies
                 elif (intent == "show_local"):
                     #engine.say("These are the movies playing near you")
                     playsound("packages/audio_files/local_movies.mp3")
                     Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
+                    self.msgLayout.addWidget(MyWidget("Here are the Gainesville theaters and the movies they’re showing today.".format(userInput)))
                     theaters = LocalMoviesScraper.searchLocalMovies()
-                    for theater in theaters:
-                        self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
-                        self.infoLayout.addWidget(MyWidget("Address: " + theater.address + "\n"))
-                        for movie in theater.movies:
-                            self.infoLayout.addWidget(MyWidget("Movie Name: " + movie.name + "\n"))
-                            self.infoLayout.addWidget(MyWidget("Duration: " + movie.duration + "\n"))
-                            for time in movie.times:
-                                self.infoLayout.addWidget(MyWidget("Time: " + time + "\n"))
-                            self.infoLayout.addWidget(MyWidget("---------------\n"))
-
+                    if (self.currRow == 499):
+                        self.tableWidget.clear()
+                        self.currRow = 0
+                        if (self.tableMode != 1):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Theater"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Address"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Movie Name"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Duration"))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Time"))
+                            self.currRow+=1
+                            self.tableMode = 1
+                    else:    
+                        if (self.tableMode != 1):
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Theater"))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Address"))
+                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Movie Name"))
+                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Duration"))
+                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Time"))
+                            self.currRow+=1
+                            self.tableMode = 1
+                    if(self.currRow+90 <= 499):
+                        for theater in theaters:
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(theater.name))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(theater.address))
+                            for movie in theater.movies:
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movie.name))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(movie.duration))
+                                for time in movie.times:
+                                    self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(time))
+                                    self.currRow+=1
+                                self.currRow+=1
+                            self.currRow+=1
+                    else:
+                        self.tableWidget.clear()
+                        self.currRow= 0
+                        for theater in theaters:
+                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(theater.name))
+                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(theater.address))
+                            for movie in theater.movies:
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movie.name))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(movie.duration))
+                                for time in movie.times:
+                                    self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(time))
+                                    self.currRow+=1
+                                self.currRow+=1
+                            self.currRow+=1
 
                     #engine.runAndWait()
 
                 print("You said {}".format(userInput))
                 self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
+                self.tableWidget.resizeColumnsToContents()
                 input("Waiting...")
             
             except sr.UnknownValueError:
@@ -275,6 +414,5 @@ if __name__ == '__main__':
     playsound("packages/audio_files/start2.mp3")
     Logging.write("System", "If you need help about with what you can do, ask!")
     ex = App()
-    ex.show()
     sys.exit(app.exec_())
     Logging.end()

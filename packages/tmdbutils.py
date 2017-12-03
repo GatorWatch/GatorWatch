@@ -20,32 +20,40 @@ class Movie:
     title = None
     id = None
     voteAverage = None
-    genres = []
+    genreids = []
+    genreStrings = []
     overview = None
     posterURL = "image.tmdb.org/t/p/w300"
 
-    def __init__(self, title, id, voteAverage, genres, overview, posterURL):
+    def __init__(self, title, id, voteAverage, genreids, overview, posterURL):
         self.title = title
         self.id = id
         self.voteAverage = voteAverage
         self.overview = overview
         self.posterURL += posterURL
-
+        self.genreids = genreids
+        for genre in genreids:
+            self.genreStrings.append(genreIdMap[genre]) 
 
 class Tv:
     name = None
     id = None
     voteAverage = None
-    genres = []
+    genreids = []
+    genreStrings= []
     overview = None
     posterURL = "image.tmdb.org/t/p/w300"
 
-    def __init__(self, name, id, voteAverage, genres, overview, posterURL):
+    def __init__(self, name, id, voteAverage, genreids, overview, posterURL):
         self.name = name
         self.id = id
         self.voteAverage = voteAverage
         self.overview = overview
         self.posterURL += posterURL
+        self.genreids = genreids
+        for genre in genreids:
+            self.genreStrings.append(genreIdMap[genre]) 
+
 
 # @description
 #  Gets the genre ID associated with a string
