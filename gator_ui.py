@@ -247,7 +247,7 @@ class Ui_Form(object):
                         output = GenerateAudio.generate(intent=intent, entities=[popularMoviesWithGenres[number].title])
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        
+
                         playsound("audio_files/temp.mp3")
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
@@ -391,16 +391,15 @@ class Ui_Form(object):
 
                             # Need to verify if movie name exists
                             for theater in theaters:
-                                while theater_name != theater.name:
-                                    continue
-                                for movie in theater.movies:
-                                    tokens = movie_name.lower().split()
+                                if theater_name.lower() == theater.name.lower():
+                                    for movie in theater.movies:
+                                        tokens = movie_name.lower().split()
 
-                                    for token in tokens:
-                                        if token in movie.name.lower():
-                                            #print("Movie exists")
-                                            movie_exists = True
-                                            break
+                                        for token in tokens:
+                                            if token in movie.name.lower():
+                                                #print("Movie exists")
+                                                movie_exists = True
+                                                break
 
                             if movie_exists:
                                 break
@@ -430,19 +429,19 @@ class Ui_Form(object):
 
                             # Verify if listing exists
                             for theater in theaters:
-                                while theater_name != theater.name:
-                                    continue
-                                for movie in theater.movies:
-                                    # Might need to tokenize movie_name
-                                    if movie_name in movie.name:
-                                        # search times
-                                        for start_time in movie.times:
+                                if theater_name.lower() == theater.name.lower():
+                                    for movie in theater.movies:
+                                        # Might need to tokenize movie_name
 
-                                            # Need to check with this - ASR might not detect times properly
-                                            if movie_time == start_time:
-                                                movie_time_exists = True
-                                                break
-                                        break
+                                        tokens = movie_name.lower().split()
+
+                                        for token in tokens:
+                                            if token in movie.name.lower():
+                                                #print("Movie exists")
+                                                for start_time in movie.times:
+                                                    if movie_time == start_time:
+                                                        movie_time_exists = True
+                                                        break
 
                             if movie_time_exists:
                                 break
