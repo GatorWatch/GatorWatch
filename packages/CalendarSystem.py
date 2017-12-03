@@ -62,39 +62,14 @@ def getCalendar():
 
     return array
 
-# Delete an event given either the name or the listing object. If given the index, delete the event at given index
-def deleteEvent(name, i=0):
-    # If the passed value is not a string (it must be a ShowListing object then)
-    if type(name) is not str:
-        name = name.name
-
-    # An index was not given
-    if i == 0:
-        i = 2
-
-    # Index was given to delete
-    else:
-        ws.cell(row=i, column=1).value = None
-        ws.cell(row=i, column=2).value = None
-        ws.cell(row=i, column=3).value = None
-        ws.cell(row=i, column=4).value = None
-        ws.cell(row=i, column=5).value = None
-        ws.cell(row=i, column=6).value = None
-        ws.cell(row=i, column=7).value = None
-        wb.save("calendar_times.xlsx")
-        return True
-
-    fail = True
+# Delete an event given the day and time
+def deleteEvent(day, time):
+    i = 0
     while ws.cell(row=i, column=1).value is not None:
-        if ws.cell(row=i, column=1).value == name:
-            fail = False
+        if ws.cell(row=i, column=6).value == day and ws.cell(row=i, column=7).value == time:
             break
-        fail = True
         i += 1
 
-    if fail:
-        print("Did not find listing to delete")
-        return False
 
     # Delete the listing
     ws.cell(row=i, column=1).value = None
