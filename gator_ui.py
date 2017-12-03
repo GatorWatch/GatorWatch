@@ -175,6 +175,55 @@ class Ui_Form(object):
             playsound("packages/audio_files/google_fail.mp3")
             userInput = None
 
+    def readjustConfidence(self, userInput, interpretation):
+        userInput = userInput.split()
+
+        CONFIDENCE_BOOST = 0.20
+
+        lookupKeywords = ["lookup", "details", "description", "overview", "info", "more"]
+        addCalendarKeywords = ["add", "save"]
+        removeCalendarKeywords = ["remove", "delete"]
+        viewCalendarKeywords = ["view"]
+        instructionsKeywords = ["help", "instructions", "commands"]
+
+        # Save the index for each intent so we don't need to constantly run a for loop
+        intentIndexMap = {}
+        i = 0
+        for intent in interpretation["intent_ranking"]:
+            intentIndexMap[intent["name"]] = i
+            i += 1
+        
+        # If the userInput matches one of the keywords, increase that particular intent
+        for word in userInput:
+            word = word.lower()
+            if word in lookupKeywords:
+                interpretation["intent_ranking"][intentIndexMap["lookup_details"]]["confidence"] += CONFIDENCE_BOOST
+            if word == "calendar":
+                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in addCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in removeCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in viewCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST                
+            elif word in instructionsKeywords:
+                interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
+
+        # After readjusting the confidences, find the intent name with the highest confidence
+        newIntent = interpretation["intent"]["name"]
+        largestConfidence = interpretation["intent"]["confidence"]
+        for intent in interpretation["intent_ranking"]:
+            if intent["confidence"] > largestConfidence:
+                largestConfidence = intent["confidence"]
+                newIntent = intent["name"]
+
+        interpretation["intent"]["name"] = newIntent
+        interpretation["intent"]["confidence"] = largestConfidence
+
+        return interpretation
+
     def speechApp(self):
         global previousIntent
         global theaters
@@ -197,6 +246,7 @@ class Ui_Form(object):
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
+                interpretation = self.readjustConfidence(userInput, interpretation)
                 print(interpretation)
                 intent = interpretation["intent"]["name"]
                 confidence = interpretation["intent"]["confidence"]
@@ -260,24 +310,23 @@ class Ui_Form(object):
                             movieToLookup = entities[0]["value"]
 
                     if movieToLookup is None or movieToLookup == "":
+                        self.msgLayout.addWidget(MyWidget("Ok, what movie do you want to know more about?", left=True))
                         Logging.write("System", "Ok, what movie do you want to know more about?")
                         playsound("packages/audio_files/find_movie.mp3")
                         while (movieToLookup is None or movieToLookup == ""):
-                            #print("What movie do you want to look up")
                             movieToLookup = self.rerun()
                         Logging.write("User", movieToLookup)
                         self.msgLayout.addWidget(MyWidget(format(movieToLookup), left=False))
                         # Print what user says
 
                     output = GenerateAudio.generate(intent, entities=[movieToLookup])
-                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)
-                    # print output to UI
-                    # print movieToLookup on right side
+                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
                     Logging.write("System", output)
                     self.msgLayout.addWidget(MyWidget(output))
+                    self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
                     playsound("audio_files/temp.mp3")
 
-                    print(movieToLookup[0].title)
+                    similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
@@ -732,6 +781,10 @@ class Ui_Form(object):
                     Logging.write("System", "You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events.")
                     self.msgLayout.addWidget(MyWidget("You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."))
 
+                elif intent == "bye":
+                    Logging.write("System", "Exitting...")
+                    sys.exit(0)
+                
                 previousIntent = intent
             
             except sr.UnknownValueError:
@@ -751,8 +804,8 @@ class Ui_Form(object):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    r = sr.Recognizer() 
-    m = sr.Microphone()
+    # r = sr.Recognizer() 
+    # m = sr.Microphone()
     print("A moment of silence, please...")
     # with m as source: r.adjust_for_ambient_noise(source)
     # print("Set minimum energy threshold to {}".format(r.energy_threshold))

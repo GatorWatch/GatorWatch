@@ -744,6 +744,139 @@
             "entity": "movie"
           }
         ]
+      },
+      {
+        "text": "view my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "I want to pull up my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "whats a good thriller",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 21,
+            "value": "thriller",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "take coco off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 9,
+            "value": "coco",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "goodbye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "good bye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm finished",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "farewell",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "see you later",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I am done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "close",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "shutdown",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "show me my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar please",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "pull up my schedule",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "can you tell me what is on my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "take wonder off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 11,
+            "value": "wonder",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "can you tell me if jeopardy is on tonight",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 19,
+            "end": 27,
+            "value": "jeopardy",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "let me view my calendar so far",
+        "intent": "view_calendar",
+        "entities": []
       }
     ],
     "entity_synonyms": [
@@ -758,7 +891,8 @@
       {
         "value": "tv_show",
         "synonyms": [
-          "TV,   tv show",
+          "TV",
+          "tv show",
           "show",
           "tv episode",
           "episode"
@@ -769,6 +903,13 @@
         "synonyms": [
           "sci fi",
           "scifi"
+        ]
+      },
+      {
+        "value": "information",
+        "synonyms": [
+          "info",
+          "details"
         ]
       }
     ],
