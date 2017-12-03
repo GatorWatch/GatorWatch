@@ -240,6 +240,15 @@ class Ui_Form(object):
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
                     else:
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
+
+                        # Pick a random movie to say
+                        random.seed()
+                        number = random.randint(0, len(popularMoviesWithGenres))
+                        output = GenerateAudio.generate(intent=intent, entities=[popularMoviesWithGenres[number].title])
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        
+                        playsound("audio_files/temp.mp3")
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
 
