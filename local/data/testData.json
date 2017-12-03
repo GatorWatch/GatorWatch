@@ -533,6 +533,350 @@
             "entity": "genre"
           }
         ]
+      },
+      {
+        "text": "tell me more about superman",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 27,
+            "value": "superman",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to see local movies",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I want to add dunkirk to my calendar",
+        "intent": "add_to_calendar",
+        "entities": [
+          {
+            "start": 14,
+            "end": 21,
+            "value": "dunkirk",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to know more about the godfather",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 26,
+            "end": 39,
+            "value": "the godfather",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to know if Family Guy is playing soon",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 18,
+            "end": 28,
+            "value": "Family Guy",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need to know if Friends is on",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 18,
+            "end": 25,
+            "value": "Friends",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need help",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what channel is Seinfield on",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 16,
+            "end": 25,
+            "value": "Seinfield",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need to know what is playing near me",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I need to know more about a movie",
+        "intent": "lookup_details",
+        "entities": []
+      },
+      {
+        "text": "I would like to see mystery",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 20,
+            "end": 27,
+            "value": "mystery",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "I would like something funny or actiony",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 32,
+            "end": 39,
+            "value": "action",
+            "entity": "genre"
+          },
+          {
+            "start": 23,
+            "end": 28,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "go to a scifi movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 8,
+            "end": 13,
+            "value": "scifi",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "I like animations",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 7,
+            "end": 17,
+            "value": "animations",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "i'm looking for lost",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 16,
+            "end": 20,
+            "value": "lost",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "will legally blonde be playing tonight",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 5,
+            "end": 19,
+            "value": "legally blonde",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "any chance family feud is on tv",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "family feud",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "whats playing in theaters near me",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "search for chopped",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 11,
+            "end": 18,
+            "value": "chopped",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I want to find out more about Moana",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 30,
+            "end": 35,
+            "value": "Moana",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "view my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "I want to pull up my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "whats a good thriller",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 21,
+            "value": "thriller",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "take coco off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 9,
+            "value": "coco",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "goodbye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "good bye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm finished",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "farewell",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "see you later",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I am done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "close",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "shutdown",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "show me my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar please",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "pull up my schedule",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "can you tell me what is on my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "take wonder off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 11,
+            "value": "wonder",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "can you tell me if jeopardy is on tonight",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 19,
+            "end": 27,
+            "value": "jeopardy",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "let me view my calendar so far",
+        "intent": "view_calendar",
+        "entities": []
       }
     ],
     "entity_synonyms": [
@@ -547,7 +891,8 @@
       {
         "value": "tv_show",
         "synonyms": [
-          "TV,   tv show",
+          "TV",
+          "tv show",
           "show",
           "tv episode",
           "episode"
@@ -558,6 +903,13 @@
         "synonyms": [
           "sci fi",
           "scifi"
+        ]
+      },
+      {
+        "value": "information",
+        "synonyms": [
+          "info",
+          "details"
         ]
       }
     ],

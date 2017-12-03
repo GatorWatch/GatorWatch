@@ -275,7 +275,7 @@ def generate(intent, entities):
         output += entities[1]   # Movie name
         output += scripts["confirm_movie3"]
         output += entities[2]   # Time
-        output += scripts["confirm_movies4"]
+        output += scripts["confirm_movie4"]
 
     elif intent == "confirm_show" and entities is not None:
         output += scripts["confirm_show1"]

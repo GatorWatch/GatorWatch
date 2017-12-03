@@ -194,6 +194,55 @@ class Ui_Form(object):
             userInput = None
             return userInput
 
+    def readjustConfidence(self, userInput, interpretation):
+        userInput = userInput.split()
+
+        CONFIDENCE_BOOST = 0.20
+
+        lookupKeywords = ["lookup", "details", "description", "overview", "info", "more"]
+        addCalendarKeywords = ["add", "save"]
+        removeCalendarKeywords = ["remove", "delete"]
+        viewCalendarKeywords = ["view"]
+        instructionsKeywords = ["help", "instructions", "commands"]
+
+        # Save the index for each intent so we don't need to constantly run a for loop
+        intentIndexMap = {}
+        i = 0
+        for intent in interpretation["intent_ranking"]:
+            intentIndexMap[intent["name"]] = i
+            i += 1
+        
+        # If the userInput matches one of the keywords, increase that particular intent
+        for word in userInput:
+            word = word.lower()
+            if word in lookupKeywords:
+                interpretation["intent_ranking"][intentIndexMap["lookup_details"]]["confidence"] += CONFIDENCE_BOOST
+            if word == "calendar":
+                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in addCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in removeCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+            elif word in viewCalendarKeywords:
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST                
+            elif word in instructionsKeywords:
+                interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
+
+        # After readjusting the confidences, find the intent name with the highest confidence
+        newIntent = interpretation["intent"]["name"]
+        largestConfidence = interpretation["intent"]["confidence"]
+        for intent in interpretation["intent_ranking"]:
+            if intent["confidence"] > largestConfidence:
+                largestConfidence = intent["confidence"]
+                newIntent = intent["name"]
+
+        interpretation["intent"]["name"] = newIntent
+        interpretation["intent"]["confidence"] = largestConfidence
+
+        return interpretation
+
     def speechApp(self):
         global previousIntent
         global theaters
@@ -233,6 +282,7 @@ class Ui_Form(object):
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
+                interpretation = self.readjustConfidence(userInput, interpretation)
                 print(interpretation)
                 intent = interpretation["intent"]["name"]
                 confidence = interpretation["intent"]["confidence"]
@@ -342,6 +392,7 @@ class Ui_Form(object):
                             movieToLookup = entities[0]["value"]
 
                     if movieToLookup is None or movieToLookup == "":
+
                         Logging.write("System", "Okay, what movie do you want to know more about?")
                         self.msgLayout.addWidget(MyWidget("Okay, what movie do you want to know more about?"))
                         playsound("packages/audio_files/find_movie.mp3")
@@ -373,12 +424,16 @@ class Ui_Form(object):
                             self.tableMode = 0   
 
                     output = GenerateAudio.generate(intent, entities=[movieToLookup])
-                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)
-                    # print output to UI
-                    # print movieToLookup on right side
+                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
                     Logging.write("System", output)
                     self.msgLayout.addWidget(MyWidget(output))
+                    self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
                     playsound("audio_files/temp.mp3")
+
+                    # Showing similar movies in development
+                    similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
+
+
                     os.remove("audio_files/temp.mp3")
 
                     #populate table with movieToLookup items
@@ -400,6 +455,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
                             self.currRow+=1
                     self.tableWidget.resizeColumnsToContents()
+
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     userTvShow = None
@@ -1058,6 +1114,10 @@ class Ui_Form(object):
                     playsound("packages/audio_files/calendar.mp3")
                     sys.exit()
 
+                elif intent == "bye":
+                    Logging.write("System", "Exitting...")
+                    sys.exit(0)
+                
                 previousIntent = intent
             
             except sr.UnknownValueError:
@@ -1078,8 +1138,8 @@ class Ui_Form(object):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    r = sr.Recognizer() 
-    m = sr.Microphone()
+    # r = sr.Recognizer() 
+    # m = sr.Microphone()
     print("A moment of silence, please...")
     # with m as source: r.adjust_for_ambient_noise(source)
     # print("Set minimum energy threshold to {}".format(r.energy_threshold))
