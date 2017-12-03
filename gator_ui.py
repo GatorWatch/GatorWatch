@@ -157,7 +157,7 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.speakBtn.clicked.connect(self.buttonClick)
         self.currRow = 0
-        #variable to know which table header to print 0=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
+        #variable to know which table header to print 3=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
         self.tableMode= 0
         self.speechApp()
 
@@ -304,21 +304,21 @@ class Ui_Form(object):
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
                     else:    
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
 
                     # Attempt to extract genres from the user input
                     # If we find genres, do a search with that list
@@ -407,21 +407,21 @@ class Ui_Form(object):
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
                     else:    
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0   
+                            self.tableMode = 3   
 
                     output = GenerateAudio.generate(intent, entities=[movieToLookup])
                     movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
