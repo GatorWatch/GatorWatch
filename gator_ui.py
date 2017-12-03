@@ -108,9 +108,9 @@ class Ui_Form(object):
         self.infoScrollContents = QtWidgets.QWidget()
         self.infoScrollContents.setGeometry(QtCore.QRect(0, 0, 598, 843))
         self.infoScrollContents.setObjectName("infoScrollContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)    
-        self.verticalLayout_3.setObjectName("verticalLayout_3")            
-        self.infoLayout = QtWidgets.QVBoxLayout()            
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.infoLayout = QtWidgets.QVBoxLayout()
         self.infoLayout.setObjectName("infoLayout")
         self.tableWidget = QtWidgets.QTableWidget(self.infoScrollContents)
         self.tableWidget.setAutoFillBackground(True)
@@ -120,7 +120,7 @@ class Ui_Form(object):
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
-        self.infoLayout.addWidget(self.tableWidget)            
+        self.infoLayout.addWidget(self.tableWidget)
         self.verticalLayout_3.addLayout(self.infoLayout)
         self.infoScrollArea.setWidget(self.infoScrollContents)
         self.infoScrollLayout.addWidget(self.infoScrollArea)
@@ -152,7 +152,7 @@ class Ui_Form(object):
         self.msgScrollArea.setWidget(self.msgScrollContents)
         self.msgScrollLayout.addWidget(self.msgScrollArea)
         self.gridLayout.addLayout(self.msgScrollLayout, 0, 0, 1, 1)
-
+        #self.msgLayout.addWidget(self.speakBtn)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.speakBtn.clicked.connect(self.buttonClick)
@@ -192,7 +192,7 @@ class Ui_Form(object):
 
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
-            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))  
+            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
             Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
             playsound("packages/audio_files/misunderstood.mp3")
             userInput = None
@@ -224,7 +224,7 @@ class Ui_Form(object):
         for intent in interpretation["intent_ranking"]:
             intentIndexMap[intent["name"]] = i
             i += 1
-        
+
         # If the userInput matches one of the keywords, increase that particular intent
         for word in userInput:
             word = word.lower()
@@ -239,7 +239,7 @@ class Ui_Form(object):
             elif word in removeCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in viewCalendarKeywords:
-                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST                
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in instructionsKeywords:
                 interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
 
@@ -256,6 +256,26 @@ class Ui_Form(object):
 
         return interpretation
 
+    def decipherTime(self, input_audio):
+        input_audio = input_audio.lower()
+        hour = ""
+        if "o'clock" in input_audio:
+            i = 0
+            while input_audio[i] != " ":
+                hour += input_audio[i]
+                i += 1
+            hour += ":00"
+        else:
+            tokens = input_audio.split()
+            hour = input_audio[0]
+
+        if "p.m." in input_audio:
+            hour += "pm"
+        else:
+            hour += "am"
+
+        return hour
+
     def speechApp(self):
         global previousIntent
         global theaters
@@ -264,6 +284,8 @@ class Ui_Form(object):
         global negations
         global misunderstands
         global timeouts
+        global num
+        
         if start:
             Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
             self.msgLayout.addWidget(MyWidget("Hello! I’m GatorWatch - I help you find movies and TV shows!"))
@@ -284,6 +306,7 @@ class Ui_Form(object):
             # with m as source:  
                 #self.toolTipToggle()
                 #audio = r.listen(source)
+
 
             try:
                 # recognize speech using Google Speech Recognition                 
@@ -325,6 +348,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
+
                             self.tableMode = 3
                     else:    
                         if (self.tableMode != 3):
@@ -352,11 +376,14 @@ class Ui_Form(object):
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMovies))
-                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage])
+                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage], num=num)
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        playsound("audio_files/temp.mp3")
-                        os.remove("audio_files/temp.mp3")
+
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+                        #os.remove("audio_files/temp.mp3")
 
                         itemLength = len(popularMovies)
                         #populate table with popularmovies items
@@ -401,7 +428,7 @@ class Ui_Form(object):
 
                 elif (intent == "lookup_details"):
                     movieToLookup = None
-                    
+
                     if (len(entities) != 0):
                         if (entities[0]["entity"] == "movie"):
                             movieToLookup = entities[0]["value"]
@@ -428,28 +455,33 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
+
                             self.tableMode = 3
                     else:    
                         if (self.tableMode != 3):
+
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
+
                             self.tableMode = 3   
 
-                    output = GenerateAudio.generate(intent, entities=[movieToLookup])
+                    output = GenerateAudio.generate(intent, entities=[movieToLookup], num=num)
                     movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
                     Logging.write("System", output)
                     self.msgLayout.addWidget(MyWidget(output))
                     self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
-                    playsound("audio_files/temp.mp3")
+                    path = "audio_files/temp" + str(num) + ".mp3"
+                    playsound(path)
+                    num += 1
 
                     # Showing similar movies in development
                     similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
 
 
-                    os.remove("audio_files/temp.mp3")
+                    #os.remove("audio_files/temp.mp3")
 
                     #populate table with movieToLookup items
                     itemLength = len(movieToLookup)
@@ -474,7 +506,7 @@ class Ui_Form(object):
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     userTvShow = None
-                    
+
                     if (len(entities) != 0):
                         if (entities[0]["entity"] == "tv_show"):
                             userTvShow = entities[0]["value"]
@@ -504,7 +536,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 2
-                    else:    
+                    else:
                         if (self.tableMode != 2):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
@@ -519,21 +551,25 @@ class Ui_Form(object):
                     itemLength = len(listings)
                     if listings is None or len(listings) == 0:
                         # Couldn't find any TV shows
-                        output = GenerateAudio.generate("no_tv_shows", entities=[userTvShow])
+                        output = GenerateAudio.generate("no_tv_shows", entities=[userTvShow], num=num)
 
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        playsound("audio_files/temp.mp3")
-                        os.remove("audio_files/temp.mp3")
-                    
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+                        #os.remove("audio_files/temp.mp3")
+
                     else:
                         # Found TV shows
-                        output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+                        output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time, listings[0].date], num=num)
 
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        playsound("audio_files/temp.mp3")
-                        os.remove("audio_files/temp.mp3")
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+                        #os.remove("audio_files/temp.mp3")
                         #populate table with listings items
                         if(itemLength+self.currRow < 499):
                             for listing in listings:
@@ -577,7 +613,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 1
-                    else:    
+                    else:
                         if (self.tableMode != 1):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Theater"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Address"))
@@ -632,7 +668,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 2
-                    else:    
+                    else:
                         if (self.tableMode != 2):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
@@ -751,7 +787,7 @@ class Ui_Form(object):
                             self.msgLayout.addWidget(MyWidget(format(movie_time), left=False))
 
                             movie_time_exists = False
-
+                            movie_time = self.decipherTime(movie_time)
                             # Verify if listing exists
                             for theater in theaters:
                                 if theater_name.lower() == theater.name.lower():
@@ -780,11 +816,13 @@ class Ui_Form(object):
                                 # Movie time does not exist
 
                         #print("Confirm")
-                        output = GenerateAudio.generate("confirm_movie", entities=[theater_name, movie_name, movie_time])
+                        output = GenerateAudio.generate("confirm_movie", entities=[theater_name, movie_name, movie_time], num=num)
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        playsound("audio_files/temp.mp3")
-                        os.remove("audio_files/temp.mp3")
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+                        #os.remove("audio_files/temp.mp3")
 
                         confidence = 0
 
@@ -833,11 +871,13 @@ class Ui_Form(object):
                                 playsound("packages/audio_files/add_to_calendar.mp3")
 
                             else:
-                                output = GenerateAudio.generate("calendar_overlap", entities=[saved])
+                                output = GenerateAudio.generate("calendar_overlap", entities=[saved], num=num)
                                 Logging.write("System", output)
                                 self.msgLayout.addWidget(MyWidget(output))
-                                playsound("audio_files/temp.mp3")
-                                os.remove("audio_files/temp.mp3")
+                                path = "audio_files/temp" + str(num) + ".mp3"
+                                playsound(path)
+                                num += 1
+                                #os.remove("audio_files/temp.mp3")
 
                         else:
                             intent = "show_local"
@@ -928,6 +968,8 @@ class Ui_Form(object):
                             Logging.write("User", show_time)
                             self.msgLayout.addWidget(MyWidget(format(show_time), left=False))
 
+                            show_time = self.decipherTime(show_time)
+
                             event = None
                             for listing in listings:
                                 tokens = show_name.lower().split()
@@ -949,11 +991,13 @@ class Ui_Form(object):
                                 misunderstands += 1
 
                         #print("Confirm")
-                        output = GenerateAudio.generate("confirm_show", entities=[show_name, show_day, show_time])
+                        output = GenerateAudio.generate("confirm_show", entities=[show_name, show_day, show_time], num=num)
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        playsound("audio_files/temp.mp3")
-                        os.remove("audio_files/temp.mp3")
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+                        #os.remove("audio_files/temp.mp3")
 
                         confidence = 0
 
@@ -987,11 +1031,13 @@ class Ui_Form(object):
                                 playsound("packages/audio_files/add_to_calendar.mp3")
 
                             else:
-                                output = GenerateAudio.generate("calendar_overlap", entities=[saved])
+                                output = GenerateAudio.generate("calendar_overlap", entities=[saved], num=num)
                                 Logging.write("System", output)
                                 self.msgLayout.addWidget(MyWidget(output))
-                                playsound("audio_files/temp.mp3")
-                                os.remove("audio_files/temp.mp3")
+                                path = "audio_files/temp" + str(num) + ".mp3"
+                                playsound(path)
+                                num += 1
+                                #os.remove("audio_files/temp.mp3")
 
                         else:
                             negations += 1
@@ -1051,11 +1097,12 @@ class Ui_Form(object):
                                 event_time_exists = False
 
                                 while event_time is None:
-                                    # print("What movie do you want to look up")
                                     event_time = self.rerun()
 
                                 Logging.write("User", event_time)
                                 self.msgLayout.addWidget(MyWidget(format(event_time), left=False))
+
+                                event_time = self.decipherTime(event_time)
 
                                 if event_time_exists:
                                     break
@@ -1066,11 +1113,13 @@ class Ui_Form(object):
                                     playsound("packages/audio_files/invalid_event_time.mp3")
                                     misunderstands += 1
 
-                            output = GenerateAudio.generate("confirm_deletion", entities=[event_day, event_time])
+                            output = GenerateAudio.generate("confirm_deletion", entities=[event_day, event_time], num=num)
                             Logging.write("System", output)
                             self.msgLayout.addWidget(MyWidget(output))
-                            playsound("audio_files/temp.mp3")
-                            os.remove("audio_files/temp.mp3")
+                            path = "audio_files/temp" + str(num) + ".mp3"
+                            playsound(path)
+                            num += 1
+                            #os.remove("audio_files/temp.mp3")
 
                             confidence = 0
 
@@ -1126,15 +1175,18 @@ class Ui_Form(object):
                 elif intent == "bye":
                     Logging.write("System", "Okay, see you later!")
                     self.msgLayout.addWidget(MyWidget("Okay, see you later!"))
-                    playsound("packages/audio_files/calendar.mp3")
+                    playsound("packages/audio_files/bye.mp3")
                     sys.exit()
 
-                elif intent == "bye":
-                    Logging.write("System", "Exitting...")
-                    sys.exit(0)
-                
                 previousIntent = intent
-            
+
+                # Check time every time after user hits speak button and finished
+                reminder = CalendarSystem.checkTime()
+                if type(reminder) is not int:
+                     print("Reminder!")
+
+
+
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
@@ -1147,7 +1199,7 @@ class Ui_Form(object):
                 self.msgLayout.addWidget(MyWidget("Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
                 Logging.write("System", "Couldn't request results from Google Speech Recognition service.")
                 playsound("packages/audio_files/google_fail.mp3")
-            
+
         except KeyboardInterrupt:
             pass
 
@@ -1164,6 +1216,8 @@ if __name__ == '__main__':
     previousIntent = None
     start = True
 
+    num = 0
+
     negations = 0
     misunderstands = 0
     timeouts = 0
@@ -1178,4 +1232,4 @@ if __name__ == '__main__':
         ex.show()
         sys.exit(app.exec_())
     finally:
-        Logging.end()
+        Logging.end(negations, misunderstands, timeouts)

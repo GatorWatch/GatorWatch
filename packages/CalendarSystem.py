@@ -21,6 +21,26 @@ class ShowListing:
         self.time = time
 
 
+class Reminder:
+    name = ""
+    episode_name = ""
+    episode = ""
+    description = ""
+    channel = ""
+    date = ""
+    time = ""
+    index = 0
+
+    def __init__(self, name, episode_name, episode, description, channel, date, time, index):
+            self.name = name
+            self.episode_name = episode_name
+            self.episode = episode
+            self.description = description
+            self.channel = channel
+            self.date = date
+            self.time = time
+            self.index = index
+
 # When the user wants to save a listing, save it to the calendar
 def saveCalendar(listing):
     i = 2
@@ -141,6 +161,7 @@ def checkTime():
 
         time = time.split(":")
         hour = time[0]
+        hour = int(hour)
         minutes = time[1]
 
         if minutes[2:] == "pm" and hour != 12:
@@ -166,13 +187,16 @@ def checkTime():
             channel = ws.cell(row=i, column=5).value
             date = ws.cell(row=i, column=6).value
             time = ws.cell(row=i, column=7).value
-            listing = ShowListing(name, episode_name, episode_number, description, channel, date, time)
-            return listing
+            temp_reminder = Reminder(name, episode_name, episode_number, description, channel, date, time, i)
+            return temp_reminder
 
         i += 1
 
-    return False
+    return 0
 
 
 wb = load_workbook("calendar_times.xlsx")
 ws = wb["Sheet1"]
+
+#checking = checkTime()
+#print(checking)
