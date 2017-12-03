@@ -18,6 +18,7 @@ import random
 from packages import Logging
 from packages import CalendarSystem
 import datetime
+import os
 
 class ShowListing:
     name = ""
@@ -155,6 +156,7 @@ class Ui_Form(object):
         self.speechApp()
 
     def rerun(self):
+        global timeouts
         try:
             # with m as source: audio = r.listen(source)
             # userInput = r.recognize_google(audio)
@@ -167,6 +169,8 @@ class Ui_Form(object):
             Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
             playsound("packages/audio_files/misunderstood.mp3")
             userInput = None
+            timeouts += 1
+            return userInput
 
         except sr.RequestError as e:
             print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
@@ -174,6 +178,7 @@ class Ui_Form(object):
             Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
             playsound("packages/audio_files/google_fail.mp3")
             userInput = None
+            return userInput
 
     def speechApp(self):
         global previousIntent
@@ -224,7 +229,6 @@ class Ui_Form(object):
 
                 # TODO: Find a way to handle low confidence intents
                 if (confidence < 0.0):
-                    #print("Sorry, could you rephrase that?")
                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                     self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                     playsound("packages/audio_files/misunderstood.mp3")
@@ -242,7 +246,6 @@ class Ui_Form(object):
                             userGenres.append(item["value"].title())
 
                     # If no genres specified, do default search
-                    #playsound(popular_movies)
                     if not userGenres:
                         popularMovies = tmdbutils.getPopularMovies()
 
@@ -253,9 +256,12 @@ class Ui_Form(object):
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        os.remove("audio_files/temp.mp3")
 
                         for movieItem in popularMovies:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
+
+                    # Search for movies of the genre
                     else:
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
 
@@ -266,6 +272,7 @@ class Ui_Form(object):
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        os.remove("audio_files/temp.mp3")
 
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
@@ -278,11 +285,13 @@ class Ui_Form(object):
                             movieToLookup = entities[0]["value"]
 
                     if movieToLookup is None or movieToLookup == "":
-                        Logging.write("System", "Ok, what movie do you want to know more about?")
+                        Logging.write("System", "Okay, what movie do you want to know more about?")
+                        self.msgLayout.addWidget(MyWidget("Okay, what movie do you want to know more about?"))
                         playsound("packages/audio_files/find_movie.mp3")
+
                         while (movieToLookup is None or movieToLookup == ""):
-                            #print("What movie do you want to look up")
                             movieToLookup = self.rerun()
+
                         Logging.write("User", movieToLookup)
                         self.msgLayout.addWidget(MyWidget(format(movieToLookup), left=False))
                         # Print what user says
@@ -294,9 +303,9 @@ class Ui_Form(object):
                     Logging.write("System", output)
                     self.msgLayout.addWidget(MyWidget(output))
                     playsound("audio_files/temp.mp3")
+                    os.remove("audio_files/temp.mp3")
 
                     # Display movies on the info screen
-                    # print(movieToLookup[0].title)
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
@@ -310,8 +319,8 @@ class Ui_Form(object):
                         Logging.write("System", "Okay, what show do you want to look up?")
                         self.msgLayout.addWidget(MyWidget("Okay, what show do you want to look up?"))
                         playsound("packages/audio_files/show_tv_question.mp3")
+
                         while (userTvShow is None or userTvShow == ""):
-                            #print("What show do you want to search for?")
                             userTvShow = self.rerun()
 
                         Logging.write("User", userTvShow)
@@ -320,17 +329,22 @@ class Ui_Form(object):
 
                     listings = GuideScraper.searchTVGuide(userTvShow)
                     if listings is None or len(listings) == 0:
+                        # Couldn't find any TV shows
                         output = GenerateAudio.generate("no_tv_shows", entities=[userTvShow])
+
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
-                        #print("Couldn't find anything")
+                        os.remove("audio_files/temp.mp3")
                     
                     else:
+                        # Found TV shows
                         output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        os.remove("audio_files/temp.mp3")
 
                         # Print listings to the table on info screen
 
@@ -396,6 +410,7 @@ class Ui_Form(object):
                                 Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town.")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."))
                                 playsound("packages/audio_files/invalid_theater.mp3")
+                                misunderstands += 1
 
                             else:
                                 break
@@ -435,7 +450,7 @@ class Ui_Form(object):
                                 Logging.write("System", "I'm sorry, that movie does not exist. Please state one on the list.")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, that movie does not exist. Please state one on the list."))
                                 playsound("packages/audio_files/invalid_movie_name.mp3")
-                                #print("Movie does not exist")
+                                misunderstands += 1
 
                         # Ask for time
 
@@ -478,6 +493,7 @@ class Ui_Form(object):
                                 Logging.write("User", "That time is not available. Please state one on the list.")
                                 self.msgLayout.addWidget(MyWidget("That time is not available. Please state one on the list."))
                                 playsound("packages/audio_files/invalid_movie_time.mp3")
+                                misunderstands += 1
                                 # Movie time does not exist
 
                         #print("Confirm")
@@ -485,16 +501,31 @@ class Ui_Form(object):
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        os.remove("audio_files/temp.mp3")
 
-                        userInput = None
-                        while userInput is None:
-                            userInput = self.rerun()
+                        confidence = 0
 
-                        # Need to find intent
-                        interpretation = nlu.getInterpretation(userInput)
-                        intent = interpretation["intent"]["name"]
+                        while confidence < 0:
+                            userInput = None
+                            while userInput is None:
+                                userInput = self.rerun()
 
-                        # Incorporate confidence here
+                            # Need to find intent
+                            interpretation = nlu.getInterpretation(userInput)
+                            intent = interpretation["intent"]["name"]
+
+                            # Incorporate confidence here
+
+                            confidence = interpretation["intent"]["confidence"]
+                            if (confidence < 0.0):
+                                # print("Sorry, could you rephrase that?")
+                                Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
+                                playsound("packages/audio_files/misunderstood.mp3")
+                                confidence = 0
+                                misunderstands += 1
+
+
 
                         if intent == "affirm":
                             # Add to calendar
@@ -523,14 +554,15 @@ class Ui_Form(object):
                                 Logging.write("System", output)
                                 self.msgLayout.addWidget(MyWidget(output))
                                 playsound("audio_files/temp.mp3")
+                                os.remove("audio_files/temp.mp3")
 
                         else:
                             # Need to work on this - either kick out the user or modify entities
+                            negations += 1
                             print("Do you want to change the theater, movie name, time, or cancel the event?")
 
 
                     elif previousIntent == "show_tv":
-                        #print("Show name")
                         Logging.write("System", "Okay, what's the the name of the show that you want to add?")
                         self.msgLayout.addWidget(MyWidget("Okay, what's the the name of the show that you want to add?"))
                         playsound("packages/audio_files/show_name_question.mp3")
@@ -562,8 +594,8 @@ class Ui_Form(object):
                                 Logging.write("System", "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found.")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that TV show. Please choose from one of the listings I found."))
                                 playsound("packages/audio_files/invalid_show_name.mp3")
+                                misunderstands += 1
 
-                        print("Day")
                         Logging.write("System", "And the day of the show?")
                         self.msgLayout.addWidget(MyWidget("And the day of the show?"))
                         playsound("packages/audio_files/show_day_question.mp3")
@@ -593,6 +625,7 @@ class Ui_Form(object):
                                 Logging.write("System", "I'm sorry, I didn't find that there is a showing on that day. Please say another day.")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing on that day. Please say another day."))
                                 playsound("packages/audio_files/invalid_show_day.mp3")
+                                misunderstands += 1
 
 
                         print("Time")
@@ -628,12 +661,14 @@ class Ui_Form(object):
                                 Logging.write("System", "I'm sorry, I didn't find that there is a showing at that time. Please say another time.")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing at that time. Please say another time."))
                                 playsound("packages/audio_files/invalid_show_time.mp3")
+                                misunderstands += 1
 
                         #print("Confirm")
                         output = GenerateAudio.generate("confirm_show", entities=[show_name, show_day, show_time])
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        os.remove("audio_files/temp.mp3")
 
                         confidence = 0
 
@@ -652,9 +687,10 @@ class Ui_Form(object):
                             if (confidence < 0.0):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?\n"))
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                                 playsound("packages/audio_files/misunderstood.mp3")
                                 confidence = 0
+                                misunderstands += 1
 
 
                         if intent == "affirm":
@@ -670,9 +706,11 @@ class Ui_Form(object):
                                 Logging.write("System", output)
                                 self.msgLayout.addWidget(MyWidget(output))
                                 playsound("audio_files/temp.mp3")
+                                os.remove("audio_files/temp.mp3")
 
 
                         else:
+                            negations += 1
                             print("Do you want to change the show name, time, or cancel the event?")
 
                     else:
@@ -712,6 +750,7 @@ class Ui_Form(object):
                                     Logging.write("System", "You have no event at on that date. Please state another date.")
                                     self.msgLayout.addWidget(MyWidget("You have no event on that date. Please state another date."))
                                     playsound("packages/audio_files/invalid_event_day.mp3")
+                                    misunderstands += 1
 
 
                             #print("Ask for time")
@@ -737,21 +776,34 @@ class Ui_Form(object):
                                     Logging.write("System", "You have no event at that time. Please state another time.")
                                     self.msgLayout.addWidget(MyWidget("You have no event at that time. Please state another time."))
                                     playsound("packages/audio_files/invalid_event_time.mp3")
+                                    misunderstands += 1
 
-                            print("Confirm")
                             output = GenerateAudio.generate("confirm_deletion", entities=[event_day, event_time])
                             Logging.write("System", output)
                             self.msgLayout.addWidget(MyWidget(output))
                             playsound("audio_files/temp.mp3")
+                            os.remove("audio_files/temp.mp3")
 
-                            userInput = None
-                            while userInput is None:
-                                userInput = self.rerun()
+                            confidence = 0
 
-                            # Need to find intent
-                            interpretation = nlu.getInterpretation(userInput)
-                            intent = interpretation["intent"]["name"]
-                            # Incorporate confidence here
+                            while confidence < 0:
+                                userInput = None
+                                while userInput is None:
+                                    userInput = self.rerun()
+
+                                # Need to find intent
+                                interpretation = nlu.getInterpretation(userInput)
+                                intent = interpretation["intent"]["name"]
+
+                                confidence = interpretation["intent"]["confidence"]
+                                if (confidence < 0.0):
+                                    # print("Sorry, could you rephrase that?")
+                                    Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
+                                    self.msgLayout.addWidget(
+                                        MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
+                                    playsound("packages/audio_files/misunderstood.mp3")
+                                    confidence = 0
+                                    misunderstands += 1
 
 
                             if intent == "affirm":
@@ -761,8 +813,10 @@ class Ui_Form(object):
                                 playsound("packages/audio_files/event_deleted.mp3")
 
                             else:
-                                print("Do you want to change the show name, time, or cancel the event?")
+                                negations += 1
+                                print("Okay, do you want to create a new event to add?")
 
+                    # Cannot delete event unless the user has just viewed local movies or TV listings
                     else:
                         Logging.write("System", "I'm sorry, you cannot delete an event unless you have just viewed the calendar. View your calendar first before deleting.")
                         self.msgLayout.addWidget(MyWidget("I'm sorry, you cannot delete an event unless you have just viewed the calendar. View your calendar first before deleting."))
@@ -791,6 +845,7 @@ class Ui_Form(object):
                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
                 Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
                 playsound("packages/audio_files/misunderstood.mp3")
+                timeouts += 1
 
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
@@ -817,6 +872,11 @@ if __name__ == '__main__':
     negations = 0
     misunderstands = 0
     timeouts = 0
+
+    try:
+        os.remove("audio_files/temp.mp3")
+    except:
+        print("No file to remove")
 
     ex = App()
     try:

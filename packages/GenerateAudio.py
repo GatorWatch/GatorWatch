@@ -2,7 +2,7 @@ from gtts import gTTS
 from playsound import playsound
 
 # Generate the preset audio files
-def generate_presets():
+def generate_presets1():
     language = "en"
 
     '''
@@ -113,6 +113,8 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/add_to_calendar.mp3")
 
+def generate_presets2():
+    language = "en"
     '''
     Calendar Corrections
     '''
@@ -313,11 +315,11 @@ scripts["remove_from_calendar2"] = " has been removed from your calendar."
 scripts["confirm_movie1"] = "Okay, so an event at the "
 scripts["confirm_movie2"] = " to see "
 scripts["confirm_movie3"] = " at "
-scripts["confirm_movie4"] = ". Is that correct?"
+scripts["confirm_movie4"] = ". Do you want to add this?"
 scripts["confirm_show1"] = "Okay, so an event to see "
 scripts["confirm_show2"] = " on "
 scripts["confirm_show3"] = " at "
-scripts["confirm_show4"] = ". Is that correct?"
+scripts["confirm_show4"] = ". Do you want to add this?"
 scripts["confirm_deletion1"] = "Okay, so you want to delete the event on "
 scripts["confirm_deletion2"] = " at "
 scripts["confirm_deletion3"] = " . Is that correct?"
@@ -327,10 +329,16 @@ scripts["calendar_overlap2"] = " at that time! I cannot save this event"
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")
-'''
-text = "There is a showing on November 27 at 9:30AM."
-audio = gTTS(text=text, lang="en", slow=False)
-audio.save("test.mp3")
-playsound("test.mp3")
-'''
-#generate_presets()
+
+# text = "There is a showing on November 27 at 9:30AM."
+# audio = gTTS(text=text, lang="en", slow=False)
+# audio.save("test.mp3")
+#
+# text = "Test"
+# audio = gTTS(text=text, lang="en", slow=False)
+# audio.save("test.mp3")
+
+# playsound("test.mp3")
+
+#generate_presets1()
+generate_presets2()
