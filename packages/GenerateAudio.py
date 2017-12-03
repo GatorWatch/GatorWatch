@@ -225,7 +225,7 @@ def generate_presets2():
 
 # Generates an audio file given the intent and entities
 # Returns a string of what the audio file says
-def generate(intent, entities):
+def generate(intent, entities, num):
     output = ""
     if intent == "lookup_details" and entities is not None:
         output += scripts["lookup_details"] # Name
@@ -300,7 +300,8 @@ def generate(intent, entities):
 
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
-    audio.save("audio_files/temp.mp3")
+    path = "audio_files/temp" + str(num) + ".mp3"
+    audio.save(path)
     #playsound("audio_files/temp.mp3")
     return output
 
