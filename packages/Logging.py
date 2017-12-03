@@ -3,7 +3,10 @@ import time
 import os
 
 def write(speaker, utterance):
-    text = speaker + ": " + utterance + "\r\n"
+    curr_time = time.time()
+    delta = float(curr_time) - float(start_time)
+    delta = str(delta)
+    text = speaker + ": " + utterance + " - " + delta + "\r\n"
     f.write(text)
 
 def end():
@@ -21,13 +24,13 @@ def end():
 arr = os.listdir()
 now = datetime.datetime.now()
 text = str(now.month) + "-" + str(now.day) + "-" + str(now.hour) + "-" + str(now.minute)
-text += ".txt"
+text += ".log"
 i = 0
 
 # Check to see if the file already exists - create a new file if so
 while text in arr:
     text = str(now.month) + "-" + str(now.day) + "-" + str(now.hour) + "-" + str(now.minute) + "_" + str(i)
-    text += ".txt"
+    text += ".log"
     i += 1
 
 start_time = time.time()

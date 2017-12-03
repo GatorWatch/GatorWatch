@@ -14,7 +14,7 @@ response = genre.list()
 for item in response["genres"]: 
     genreIdMap[item["id"]] = item["name"]
     genreStringMap[item["name"]] = item["id"]
-    genreStringList.append(item["name"].upper())
+    genreStringList.append(item["name"])
 
 class Movie:
     title = None
@@ -78,7 +78,7 @@ def getGenreString(genreId):
     return genreIdMap[genreId]
 
 # @description
-#   Gets the list of genre strings such as Action, Comedy,...
+#   Gets the list of genre strings in  such as Action, Comedy,...
 # @param
 #   void
 # @return

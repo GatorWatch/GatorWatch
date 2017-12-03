@@ -146,17 +146,40 @@ class Ui_Form(object):
     def buttonClick(self):
         self.speechApp()
 
+    def rerun(self):
+        try:
+            # with m as source: audio = r.listen(source)
+            # userInput = r.recognize_google(audio)
+            userInput = input("Input: ")
+            return userInput
+
+        except sr.UnknownValueError:
+            print("Oops! Didn't catch that")
+            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))  
+            Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+            playsound("packages/audio_files/misunderstood.mp3")
+            userInput = None
+
+        except sr.RequestError as e:
+            print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
+            self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+            Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+            playsound("packages/audio_files/google_fail.mp3")
+            userInput = None
+
     def speechApp(self):
+        global previousIntent
         try:
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
 
             
-            with m as source: audio = r.listen(source)
+            # with m as source: audio = r.listen(source)
 
             try:
                 # recognize speech using Google Speech Recognition
-                userInput = r.recognize_google(audio)
+                # userInput = r.recognize_google(audio)
+                userInput = input("Input: ")
                 Logging.write("User", userInput)
 
                 print("You said {}".format(userInput))
@@ -164,11 +187,22 @@ class Ui_Form(object):
 
                 # Get the intent from a model
                 interpretation = nlu.getInterpretation(userInput)
+                print(interpretation)
                 intent = interpretation["intent"]["name"]
+                confidence = interpretation["intent"]["confidence"]
+                entities = interpretation["entities"]
                 print("The intent was " + str(intent))
 
+                if (previousIntent is None):
+                    previousIntent = intent
+
+                # TODO: Find a way to handle low confidence intents
+                if (confidence < 0.0):
+                    print("Sorry, could you rephrase that?")
+                    self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n"))
+
                 # Display list of popular movies
-                if (intent == "recommend_movie"):
+                elif (intent == "recommend_movie"):
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
@@ -188,39 +222,31 @@ class Ui_Form(object):
                             self.currRow+=1
                             self.tableMode = 0
 
-
                     # Attempt to extract genres from the user input
                     # If we find genres, do a search with that list
                     # Otherwise return the default popular list
-                    # This doesn't work right with the little amount of data
-                    # entities = nlu.getEntities(interpretation)
-                    # print(entities)
                     genreStringList = tmdbutils.getGenreStringList()
                     userGenres = []
 
-                    userInput = userInput.split()
-                    # Build the list of genres to include in our search
-                    for word in userInput:
-                        if (word.upper() in genreStringList):
-                            userGenres.append(word.title())
-
+                    for item in entities:
+                        if (item["entity"] == "genre" and item["value"].title() in genreStringList):
+                            userGenres.append(item["value"].title())
 
                     # If no genres specified, do default search
                     #playsound(popular_movies)
                     if not userGenres:
-                        #engine.say("Here are some popular movies right now")
-                        #self.msgLayout.addWidget(MyWidget("Here are some popular movies right now"))
                         popularMovies = tmdbutils.getPopularMovies()
 
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMovies))
                         output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title])
+                        Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
-                        Logging.write("System", output)
+
                         itemLength = len(popularMovies)
-                        if (itemLength+self.currRow <= 499):
+                        if (itemLength+self.currRow < 499):
                             for movieItem in popularMovies:
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
                                 self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
@@ -236,12 +262,11 @@ class Ui_Form(object):
                                 self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
                                 self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
                                 self.currRow+=1
+
                     else:
-                        #engine.say("Here are some popular movies with that genre")
-                        #Logging.write("System", "Here are some popular movies with that genre")
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
                         itemLength = len(popularMoviesWithGenres)
-                        if (itemLength+self.currRow <= 499):
+                        if (itemLength+self.currRow < 499):
                             for movieItem in popularMoviesWithGenres:
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
                                 self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
@@ -258,14 +283,32 @@ class Ui_Form(object):
                                 self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
                                 self.currRow+=1
 
-                # Attempt to extract the movie or show name using rasa
-                # This is kind of hard right now without any training data
-                # elif (intent == "lookup_details"):
-                #     entities = nlu.getEntities(interpretation)
-                #     movieToLookup = entities[0]["value"]
+                elif (intent == "lookup_details"):
+                    movieToLookup = None
+                    
+                    if (len(entities) != 0):
+                        if (entities[0]["entity"] == "movie"):
+                            movieToLookup = entities[0]["value"]
+
+                    while (movieToLookup is None or movieToLookup == ""):
+                        print("What movie do you want to look up")
+                        movieToLookup = self.rerun()
+
+                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)
+                    print(movieToLookup[0].title)
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
+                    userTvShow = None
+                    
+                    if (len(entities) != 0):
+                        if (entities[0]["entity"] == "tv_show"):
+                            userTvShow = entities[0]["value"]
+
+                    while (userTvShow is None or userTvShow == ""):
+                        print("What show do you want to search for?")
+                        userTvShow = self.rerun()
+
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
@@ -290,41 +333,44 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 2
-                    listings = GuideScraper.searchTVGuide(userInput)
-                    #playsound()
-                    #output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
-                    #playsound("packages/audio_files/temp.mp3")
-                    #Logging.write("System", output)
+                    listings = GuideScraper.searchTVGuide(userTvShow)
                     itemLength = len(listings)
-                    if(itemLength+self.currRow <= 499):
-                        for listing in listings:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
-                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
-                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
-                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
-                            self.currRow+=1
+                    if listings is None or len(listings) == 0:
+                        print("Couldn't find anything")
+                    
                     else:
-                        self.tableWidget.clear()
-                        self.currRow = 0
-                        for listing in listings:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
-                            self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
-                            self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
-                            self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
-                            self.currRow+=1
-
+                        output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time])
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        playsound("audio_files/temp.mp3")
+                        if(itemLength+self.currRow < 499):
+                            for listing in listings:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
+                                self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
+                                self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
+                                self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
+                                self.currRow+=1
+                        else:
+                            self.tableWidget.clear()
+                            self.currRow = 0
+                            for listing in listings:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(listing.episode_name))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(listing.episode))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(listing.description))
+                                self.tableWidget.setItem(self.currRow,4, QTableWidgetItem(listing.channel))
+                                self.tableWidget.setItem(self.currRow,5, QTableWidgetItem(listing.date))
+                                self.tableWidget.setItem(self.currRow,6, QTableWidgetItem(listing.time))
+                                self.currRow+=1
                 # Command: Search local movies
                 elif (intent == "show_local"):
-                    #engine.say("These are the movies playing near you")
-                    playsound("packages/audio_files/local_movies.mp3")
+
                     Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
-                    self.msgLayout.addWidget(MyWidget("Here are the Gainesville theaters and the movies they’re showing today.".format(userInput)))
+                    playsound("packages/audio_files/local_movies.mp3")
+                    self.msgLayout.addWidget(MyWidget("Here are the Gainesville theaters and the movies they’re showing today."))
                     theaters = LocalMoviesScraper.searchLocalMovies()
                     if (self.currRow == 499):
                         self.tableWidget.clear()
@@ -372,23 +418,61 @@ class Ui_Form(object):
                                     self.currRow+=1
                                 self.currRow+=1
                             self.currRow+=1
+                
+                elif intent == "view_calendar":
+                    print("view calendar")
 
-                    #engine.runAndWait()
+                elif intent == "add_to_calendar":
+                    if previousIntent == "show_local":
+                        print("Ask for theater")
+                        print("Ask for movie")
+                        print("Ask for time")
+                        # Verify if listing exists
+                        print("Confirm")
+                        if intent == "affirm":
+                            print("Add to calendar")
+                        else:
+                            print("Do you want to change the theater, movie name, time, or cancel the event?")
+                    elif previousIntent == "show_tv":
+                        print("TV name")
+                        print("Time")
+                        # Verify if listing exists
+                        print("Confirm")
+                        if intent == "affirm":
+                            print("OK")
+                        else:
+                            print("Do you want to change the show name, time, or cancel the event?")
 
-                print("You said {}".format(userInput))
-                self.msgLayout.addWidget(MyWidget("You said {}\n".format(userInput)))
-                self.tableWidget.resizeColumnsToContents()
-                input("Waiting...")
+                elif intent == "remove_from_calendar":
+                    if previousIntent == "view_calendar":
+                        print("Ask for name")
+                        print("Ask for time")
+                        # Verify if listing exists
+                        print("Confirm")
+                        if intent == "affirm":
+                            print("Remove from calendar")
+                        else:
+                            print("Cancel the deletion?")
+
+                    else:
+                        print("Cannot do that")
+
+                elif intent == "show_instructions":
+                    print("play instr")
+`
+                previousIntent = intent
             
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
                 self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
-                playsound("packages/audio_files/misunderstood.mp3")
                 Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+                playsound("packages/audio_files/misunderstood.mp3")
 
             except sr.RequestError as e:
                 print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
                 self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+                Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+                playsound("packages/audio_files/google_fail.mp3")
             
         except KeyboardInterrupt:
             pass
@@ -398,21 +482,20 @@ if __name__ == '__main__':
     r = sr.Recognizer() 
     m = sr.Microphone()
     print("A moment of silence, please...")
-    with m as source: r.adjust_for_ambient_noise(source)
-    print("Set minimum energy threshold to {}".format(r.energy_threshold))
-    playsound("packages/audio_files/start1.mp3")
+    # with m as source: r.adjust_for_ambient_noise(source)
+    # print("Set minimum energy threshold to {}".format(r.energy_threshold))
+
     Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
-    #time.sleep(.10)
-    playsound("packages/audio_files/pre_survey.mp3")
-    Logging.write("System", "How strongly do you need to find any media today?")
+    playsound("packages/audio_files/start1.mp3")
 
-    # if the user responds positively, send positive response
-    # if the user responds negatively ,send negative response
-    # Logging.write("User", response)
-    # Logging.write("System", sys_response)
-
-    playsound("packages/audio_files/start2.mp3")
     Logging.write("System", "If you need help about with what you can do, ask!")
+    playsound("packages/audio_files/start2.mp3")
+
+    previousIntent = None
+
     ex = App()
-    sys.exit(app.exec_())
-    Logging.end()
+    try:
+        ex.show()
+        sys.exit(app.exec_())
+    finally:
+        Logging.end()
