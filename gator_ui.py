@@ -16,6 +16,7 @@ import time
 from packages import GenerateAudio
 import random
 from packages import Logging
+import os, traceback, types
 
 class App(QWidget):
     def __init__(self):
@@ -137,6 +138,7 @@ class Ui_Form(object):
         #variable to know which table header to print 0=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
         self.tableMode= 0
         self.speechApp()
+        self.tableWidget.resizeColumnsToContents()
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -240,10 +242,14 @@ class Ui_Form(object):
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMovies))
+                        #print(os.path.isfile('audio_files/temp.mp3'))
                         output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title])
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        # print(os.path.isfile('audio_files/temp.mp3'))
+                        # os.remove("audio_files/temp.mp3")
+                        # print(os.path.isfile('audio_files/temp.mp3'))
 
                         itemLength = len(popularMovies)
                         if (itemLength+self.currRow < 499):
@@ -343,6 +349,10 @@ class Ui_Form(object):
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
+                        # print(os.path.isfile("audio_files/temp.mp3"))
+                        # os.remove("audio_files/temp.mp3")
+                        # print(os.path.isfile("audio_files/temp.mp3"))
+
                         if(itemLength+self.currRow < 499):
                             for listing in listings:
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
@@ -459,7 +469,6 @@ class Ui_Form(object):
 
                 elif intent == "show_instructions":
                     print("play instr")
-`
                 previousIntent = intent
             
             except sr.UnknownValueError:
@@ -478,13 +487,15 @@ class Ui_Form(object):
             pass
 
 if __name__ == '__main__':
+    print(isUserAdmin())
+    # if(os.path.isfile('audio_files/temp.mp3') == True):
+    #     os.remove("audio_files/temp.mp3")
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
     m = sr.Microphone()
     print("A moment of silence, please...")
     # with m as source: r.adjust_for_ambient_noise(source)
     # print("Set minimum energy threshold to {}".format(r.energy_threshold))
-
     Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
     playsound("packages/audio_files/start1.mp3")
 
@@ -492,7 +503,6 @@ if __name__ == '__main__':
     playsound("packages/audio_files/start2.mp3")
 
     previousIntent = None
-
     ex = App()
     try:
         ex.show()
