@@ -179,6 +179,22 @@ class Ui_Form(object):
         global previousIntent
         global theaters
         global listings
+        global start
+        global negations
+        global misunderstands
+        global timeouts
+
+        if start:
+            Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
+            self.msgLayout.addWidget(MyWidget("Hello! I’m GatorWatch - I help you find movies and TV shows!"))
+            playsound("packages/audio_files/start1.mp3")
+
+            Logging.write("System", "If you need help about with what you can do, ask!")
+            self.msgLayout.addWidget(MyWidget("If you need help about with what you can do, ask!"))
+            playsound("packages/audio_files/start2.mp3")
+
+            start = False
+            return
 
         try:
             print("Say something!")
@@ -208,8 +224,10 @@ class Ui_Form(object):
 
                 # TODO: Find a way to handle low confidence intents
                 if (confidence < 0.0):
-                    print("Sorry, could you rephrase that?")
-                    self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I don't understand. Can you repeat that?\n"))
+                    #print("Sorry, could you rephrase that?")
+                    Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
+                    self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
+                    playsound("packages/audio_files/misunderstood.mp3")
 
                 # Display list of popular movies
                 elif (intent == "recommend_movie"):
@@ -231,7 +249,7 @@ class Ui_Form(object):
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMovies))
-                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title])
+                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage])
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
@@ -244,11 +262,11 @@ class Ui_Form(object):
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMoviesWithGenres))
-                        output = GenerateAudio.generate(intent=intent, entities=[popularMoviesWithGenres[number].title])
+                        output = GenerateAudio.generate(intent=intent, entities=[popularMoviesWithGenres[number].title, userGenres, popularMoviesWithGenres[number].voteAverage])
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-
                         playsound("audio_files/temp.mp3")
+
                         for movieItem in popularMoviesWithGenres:
                             self.infoLayout.addWidget(MyWidget("Title: " + movieItem.title + " " + str(movieItem.voteAverage) + "\n"))
 
@@ -277,7 +295,8 @@ class Ui_Form(object):
                     self.msgLayout.addWidget(MyWidget(output))
                     playsound("audio_files/temp.mp3")
 
-                    print(movieToLookup[0].title)
+                    # Display movies on the info screen
+                    # print(movieToLookup[0].title)
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
@@ -313,6 +332,8 @@ class Ui_Form(object):
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
 
+                        # Print listings to the table on info screen
+
                         for listing in listings:
                             self.infoLayout.addWidget(MyWidget("Name: " + listing.name + "\n"))
                             self.infoLayout.addWidget(MyWidget("Episode Name: " + listing.episode_name + "\n"))
@@ -326,24 +347,28 @@ class Ui_Form(object):
                 # Command: Search local movies
                 elif (intent == "show_local"):
 
+                    theaters = LocalMoviesScraper.searchLocalMovies()
                     Logging.write("System", "Here are the Gainesville theaters and the movies they’re showing today.")
                     self.msgLayout.addWidget(MyWidget("Here are the Gainesville theaters and the movies they’re showing today."))
                     playsound("packages/audio_files/local_movies.mp3")
-                    theaters = LocalMoviesScraper.searchLocalMovies()
+
+                    # Display theaters and associated movies on info screen
+
                     for theater in theaters:
                         self.infoLayout.addWidget(MyWidget("Theater: " + theater.name + "\n"))
                         self.infoLayout.addWidget(MyWidget("Address: " + theater.address + "\n"))
                         for movie in theater.movies:
                             self.infoLayout.addWidget(MyWidget("Movie Name: " + movie.name + "\n"))
                             self.infoLayout.addWidget(MyWidget("Duration: " + movie.duration + "\n"))
-                            for time in movie.times:
-                                self.infoLayout.addWidget(MyWidget("Time: " + time + "\n"))
+                            for item in movie.times:
+                                self.infoLayout.addWidget(MyWidget("Time: " + item + "\n"))
                             self.infoLayout.addWidget(MyWidget("---------------\n"))
                 
                 elif intent == "view_calendar":
+                    events = CalendarSystem.getCalendar()
                     Logging.write("System", "Okay, here is your calendar.")
                     playsound("packages/audio_files/show_calendar.mp3")
-                    events = CalendarSystem.getCalendar()
+
                     # Show calendar events on right side
 
                 elif intent == "add_to_calendar":
@@ -366,10 +391,12 @@ class Ui_Form(object):
                             self.msgLayout.addWidget(MyWidget(format(theater_name), left=False))
 
                             # Need to verify if theater is one of the three - if it isn't, keep asking the user
-                            if theater_name.lower() != "hippodrome" and theater_name.lower() != "royal park" and theater_name.lower() != "butler town":
-                                Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town."))
+                            # if theater_name.lower() != "hippodrome" and theater_name.lower() != "royal park" and theater_name.lower() != "butler town":
+                            if "hippodrome" not in theater_name.lower() and "royal park" not in theater_name.lower() and "butler town" not in theater_name.lower():
+                                Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."))
                                 playsound("packages/audio_files/invalid_theater.mp3")
+
                             else:
                                 break
 
@@ -466,6 +493,7 @@ class Ui_Form(object):
                         # Need to find intent
                         interpretation = nlu.getInterpretation(userInput)
                         intent = interpretation["intent"]["name"]
+
                         # Incorporate confidence here
 
                         if intent == "affirm":
@@ -607,14 +635,26 @@ class Ui_Form(object):
                         self.msgLayout.addWidget(MyWidget(output))
                         playsound("audio_files/temp.mp3")
 
-                        userInput = None
-                        while userInput is None:
-                            userInput = self.rerun()
+                        confidence = 0
 
-                        # Need to find intent
-                        interpretation = nlu.getInterpretation(userInput)
-                        intent = interpretation["intent"]["name"]
-                        # Incorporate confidence here
+                        while confidence < 0:
+                            userInput = None
+                            while userInput is None:
+                                userInput = self.rerun()
+
+                            # Need to find intent
+                            interpretation = nlu.getInterpretation(userInput)
+                            intent = interpretation["intent"]["name"]
+
+                            # Incorporate confidence here
+
+                            confidence = interpretation["intent"]["confidence"]
+                            if (confidence < 0.0):
+                                # print("Sorry, could you rephrase that?")
+                                Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?\n"))
+                                playsound("packages/audio_files/misunderstood.mp3")
+                                confidence = 0
 
 
                         if intent == "affirm":
@@ -729,8 +769,20 @@ class Ui_Form(object):
                         playsound("packages/audio_files/cannot_delete.mp3")
 
                 elif intent == "show_instructions":
-                    Logging.write("System", "You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events.")
-                    self.msgLayout.addWidget(MyWidget("You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."))
+                    Logging.write("System", "You can ask for what’s showing around here today, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events.")
+                    self.msgLayout.addWidget(MyWidget("You can ask for what’s showing around here today, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."))
+                    playsound("packages/audio_files/commands.mp3")
+
+                elif intent == "calendar_question":
+                    Logging.write("System", "The calendar stores listings for TV shows and local movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or local movie listing to the calendar.")
+                    self.msgLayout.addWidget(MyWidget("The calendar stores listings for TV shows and local movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or local movie listing to the calendar."))
+                    playsound("packages/audio_files/calendar.mp3")
+
+                elif intent == "bye":
+                    Logging.write("System", "Okay, see you later!")
+                    self.msgLayout.addWidget(MyWidget("Okay, see you later!"))
+                    playsound("packages/audio_files/calendar.mp3")
+                    sys.exit()
 
                 previousIntent = intent
             
@@ -757,16 +809,14 @@ if __name__ == '__main__':
     # with m as source: r.adjust_for_ambient_noise(source)
     # print("Set minimum energy threshold to {}".format(r.energy_threshold))
 
-    Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
-    playsound("packages/audio_files/start1.mp3")
-
-    Logging.write("System", "If you need help about with what you can do, ask!")
-    playsound("packages/audio_files/start2.mp3")
-
     theaters = []
     listings = []
-
     previousIntent = None
+    start = True
+
+    negations = 0
+    misunderstands = 0
+    timeouts = 0
 
     ex = App()
     try:

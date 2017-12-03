@@ -23,21 +23,25 @@ def generate_presets():
     audio.save("audio_files/intro.mp3")
     #playsound("audio_files/intro.mp3")
 
-    text = "You can ask for what’s showing around here, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."
+    text = "You can ask for what’s showing around here today, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/commands.mp3")
     #playsound("audio_files/commands.mp3")
 
-    text = "The calendar stores listings for TV shows and movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or movie listing to the calendar."
+    text = "The calendar stores listings for TV shows and local movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or local movie listing to the calendar."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/calendar.mp3")
     #playsound("audio_files/calendar.mp3")
+
+    text = "Okay, see you later!"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/bye.mp3")
 
     '''
     Misunderstand/error
     '''
 
-    text = "I’m sorry, I didn’t get that. Can you say that again?"
+    text = "I'm sorry, I didn't get that. Can you rephrase that?"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/misunderstood.mp3")
     #playsound("audio_files/misunderstood.mp3")
@@ -113,7 +117,7 @@ def generate_presets():
     Calendar Corrections
     '''
     text = "I'm sorry, that theater is not in Gainesville. "
-    text += "The Gainesville theaters are: Hippodrome, Royal Park, or Butler Town."
+    text += "The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_theater.mp3")
 
@@ -236,8 +240,19 @@ def generate(intent, entities):
 
     elif intent == "recommend_movie" and entities is not None:
         output += scripts["recommend_movie1"]
-        output += entities[0]
+        output += entities[0]   # Movie title
         output += scripts["recommend_movie2"]
+        output += entities[1]   # Movie rating
+        output += "."
+
+    elif intent == "recommend_movie_genre" and entities is not None:
+        output += scripts["recommend_movie_genre1"]
+        output += entities[0]   # Genre
+        output += scripts["recommend_movie_genre2"]
+        output += entities[1]   # Movie title
+        output += scripts["recommend_movie_genre3"]
+        output += entities[2]   # Movie rating
+
 
     elif intent == "no_tv_shows" and entities is not None:
         output += scripts["no_tv_shows"]
@@ -283,7 +298,10 @@ def generate(intent, entities):
 scripts = {}
 scripts["lookup_details"] = "Okay, here's information about "
 scripts["recommend_movie1"] = "Okay, here are some popular movies. "
-scripts["recommend_movie2"] = " is a popular one."
+scripts["recommend_movie2"] = " is a popular movie with a TMDB rating of "
+scripts["recommend_movie_genre1"] = "Okay, here are some "
+scripts["recommend_movie_genre2"] = " movies. "
+scripts["recommend_movie_genre3"] = " is a popular movie with a TMDB rating of "
 scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
 scripts["show_tv1"] = "Okay, here are listings for "
@@ -309,4 +327,10 @@ scripts["calendar_overlap2"] = " at that time! I cannot save this event"
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")
+'''
+text = "There is a showing on November 27 at 9:30AM."
+audio = gTTS(text=text, lang="en", slow=False)
+audio.save("test.mp3")
+playsound("test.mp3")
+'''
 #generate_presets()
