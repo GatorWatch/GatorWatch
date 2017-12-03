@@ -1,0 +1,4 @@
+Start Seconds: 1512247418.6632047
+System: Hello! I’m GatorWatch - I help you find movies and TV shows!
+System: How strongly do you need to find any media today?
+System: If you need help about with what you can do, ask!
