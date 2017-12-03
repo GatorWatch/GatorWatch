@@ -232,10 +232,17 @@ def generate(intent, entities, num):
         output += entities[0]
 
     elif intent == "show_tv" and entities is not None:
+        months = {"Jan": "January", "Feb": "February", "Mar": "March", "Apr": "April", "May": "May", "Jun": "June", "Jul": "July",
+                  "Aug": "August", "Sep": "September", "Oct": "October", "Nov": "November", "Dec": "December"}
         output += scripts["show_tv1"]
         output += entities[0]   # TV show name
         output += scripts["show_tv2"]
         output += entities[1]   # time
+        output += scripts["show_tv3"]
+
+        tokens = entities[2].split()
+        output += months[tokens[0]]   # month
+        output += " " + tokens[1]
         output += "."
 
     elif intent == "add_to_calendar" and entities is not None:
@@ -317,6 +324,7 @@ scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
 scripts["show_tv1"] = "Okay, here are listings for "
 scripts["show_tv2"] = ". There is a showing at "
+scripts["show_tv3"] = " on "
 scripts["add_to_calendar1"] = "Okay, "
 scripts["add_to_calendar2"] = " has been added to your calendar."
 scripts["remove_from_calendar1"] = "Okay, "

@@ -108,9 +108,9 @@ class Ui_Form(object):
         self.infoScrollContents = QtWidgets.QWidget()
         self.infoScrollContents.setGeometry(QtCore.QRect(0, 0, 598, 843))
         self.infoScrollContents.setObjectName("infoScrollContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)    
-        self.verticalLayout_3.setObjectName("verticalLayout_3")            
-        self.infoLayout = QtWidgets.QVBoxLayout()            
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.infoScrollContents)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.infoLayout = QtWidgets.QVBoxLayout()
         self.infoLayout.setObjectName("infoLayout")
         self.tableWidget = QtWidgets.QTableWidget(self.infoScrollContents)
         self.tableWidget.setAutoFillBackground(True)
@@ -120,7 +120,7 @@ class Ui_Form(object):
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
-        self.infoLayout.addWidget(self.tableWidget)            
+        self.infoLayout.addWidget(self.tableWidget)
         self.verticalLayout_3.addLayout(self.infoLayout)
         self.infoScrollArea.setWidget(self.infoScrollContents)
         self.infoScrollLayout.addWidget(self.infoScrollArea)
@@ -179,7 +179,7 @@ class Ui_Form(object):
 
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
-            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))  
+            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
             Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
             playsound("packages/audio_files/misunderstood.mp3")
             userInput = None
@@ -211,7 +211,7 @@ class Ui_Form(object):
         for intent in interpretation["intent_ranking"]:
             intentIndexMap[intent["name"]] = i
             i += 1
-        
+
         # If the userInput matches one of the keywords, increase that particular intent
         for word in userInput:
             word = word.lower()
@@ -226,7 +226,7 @@ class Ui_Form(object):
             elif word in removeCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in viewCalendarKeywords:
-                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST                
+                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in instructionsKeywords:
                 interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
 
@@ -242,6 +242,26 @@ class Ui_Form(object):
         interpretation["intent"]["confidence"] = largestConfidence
 
         return interpretation
+
+    def decipherTime(self, input_audio):
+        input_audio = input_audio.lower()
+        hour = ""
+        if "o'clock" in input_audio:
+            i = 0
+            while input_audio[i] != " ":
+                hour += input_audio[i]
+                i += 1
+            hour += ":00"
+        else:
+            tokens = input_audio.split()
+            hour = input_audio[0]
+
+        if "p.m." in input_audio:
+            hour += "pm"
+        else:
+            hour += "am"
+
+        return hour
 
     def speechApp(self):
         global previousIntent
@@ -269,7 +289,7 @@ class Ui_Form(object):
             print("Say something!")
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
 
-            
+
             # with m as source: audio = r.listen(source)
 
             try:
@@ -312,7 +332,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
                             self.tableMode = 0
-                    else:    
+                    else:
                         if (self.tableMode != 0):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
@@ -390,7 +410,7 @@ class Ui_Form(object):
 
                 elif (intent == "lookup_details"):
                     movieToLookup = None
-                    
+
                     if (len(entities) != 0):
                         if (entities[0]["entity"] == "movie"):
                             movieToLookup = entities[0]["value"]
@@ -418,14 +438,14 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
                             self.tableMode = 0
-                    else:    
+                    else:
                         if (self.tableMode != 0):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0   
+                            self.tableMode = 0
 
                     output = GenerateAudio.generate(intent, entities=[movieToLookup], num=num)
                     movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
@@ -465,7 +485,7 @@ class Ui_Form(object):
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     userTvShow = None
-                    
+
                     if (len(entities) != 0):
                         if (entities[0]["entity"] == "tv_show"):
                             userTvShow = entities[0]["value"]
@@ -495,7 +515,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 2
-                    else:    
+                    else:
                         if (self.tableMode != 2):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
@@ -518,10 +538,10 @@ class Ui_Form(object):
                         playsound(path)
                         num += 1
                         #os.remove("audio_files/temp.mp3")
-                    
+
                     else:
                         # Found TV shows
-                        output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time], num=num)
+                        output = GenerateAudio.generate(intent=intent, entities=[listings[0].name, listings[0].time, listings[0].date], num=num)
 
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
@@ -572,7 +592,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,4, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 1
-                    else:    
+                    else:
                         if (self.tableMode != 1):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Theater"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Address"))
@@ -627,7 +647,7 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,6, QTableWidgetItem("Time"))
                             self.currRow+=1
                             self.tableMode = 2
-                    else:    
+                    else:
                         if (self.tableMode != 2):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Name"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Episode Name"))
@@ -746,7 +766,7 @@ class Ui_Form(object):
                             self.msgLayout.addWidget(MyWidget(format(movie_time), left=False))
 
                             movie_time_exists = False
-
+                            movie_time = self.decipherTime(movie_time)
                             # Verify if listing exists
                             for theater in theaters:
                                 if theater_name.lower() == theater.name.lower():
@@ -927,6 +947,8 @@ class Ui_Form(object):
                             Logging.write("User", show_time)
                             self.msgLayout.addWidget(MyWidget(format(show_time), left=False))
 
+                            show_time = self.decipherTime(show_time)
+
                             event = None
                             for listing in listings:
                                 tokens = show_name.lower().split()
@@ -1054,11 +1076,12 @@ class Ui_Form(object):
                                 event_time_exists = False
 
                                 while event_time is None:
-                                    # print("What movie do you want to look up")
                                     event_time = self.rerun()
 
                                 Logging.write("User", event_time)
                                 self.msgLayout.addWidget(MyWidget(format(event_time), left=False))
+
+                                event_time = self.decipherTime(event_time)
 
                                 if event_time_exists:
                                     break
@@ -1131,9 +1154,9 @@ class Ui_Form(object):
                 elif intent == "bye":
                     Logging.write("System", "Okay, see you later!")
                     self.msgLayout.addWidget(MyWidget("Okay, see you later!"))
-                    playsound("packages/audio_files/calendar.mp3")
+                    playsound("packages/audio_files/bye.mp3")
                     sys.exit()
-                
+
                 previousIntent = intent
 
                 # Check time every time after user hits speak button and finished
@@ -1142,7 +1165,7 @@ class Ui_Form(object):
                      print("Reminder!")
 
 
-            
+
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
@@ -1155,7 +1178,7 @@ class Ui_Form(object):
                 self.msgLayout.addWidget(MyWidget("Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
                 Logging.write("System", "Couldn't request results from Google Speech Recognition service.")
                 playsound("packages/audio_files/google_fail.mp3")
-            
+
         except KeyboardInterrupt:
             pass
 
