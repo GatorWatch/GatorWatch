@@ -125,6 +125,21 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_movie_time.mp3")
 
+    text = "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_show_name.mp3")
+
+    text = "I'm sorry, I didn't find that there is a showing on that day. Please say another day."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_show_day.mp3")
+
+    text = "I'm sorry, I didn't find that there is a showing at that time. Please say another time."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_show_time.mp3")
+
+    text = "You can only add events to the calendar after viewing local movies or looking up a TV show."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/cannot_add_event.mp3")
 
     '''
     Restrictive prompts
@@ -150,14 +165,48 @@ def generate_presets():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/movie_time_question.mp3")
 
-    text = "Okay, what's the the name of the show"
+    text = "Okay, what's the the name of the show that you want to add?"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/show_name_question.mp3")
+
+    text = "And the day of the show?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/show_day_question.mp3")
 
     text = "And the time of the show?"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/show_time_question.mp3")
 
+    '''
+    Calendar deletion
+    '''
+    text = "I'm sorry, you cannot delete an event unless you have just viewed the calendar. View your calendar first before deleting."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/cannot_delete.mp3")
+
+    text = "You have no events to delete!"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/no_events.mp3")
+
+    text = "Okay, what is the day of the event that you want to delete?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/event_day_question.mp3")
+
+    text = "You have no event at on that date. Please state another date."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_event_day.mp3")
+
+    text = "And the time of the event?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/event_time_question.mp3")
+
+    text = "You have no event at that time. Please state another time."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/invalid_event_time.mp3")
+
+    text = "Okay, the event has been deleted from your calendar."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/event_deleted.mp3")
 
 
 # Generates an audio file given the intent and entities
@@ -173,7 +222,7 @@ def generate(intent, entities):
         output += entities[0]   # TV show name
         output += scripts["show_tv2"]
         output += entities[1]   # time
-        output += scripts["show_tv3"]
+        output += "."
 
     elif intent == "add_to_calendar" and entities is not None:
         output += scripts["add_to_calendar1"]
@@ -201,6 +250,23 @@ def generate(intent, entities):
         output += entities[1]   # Movie name
         output += scripts["confirm_movie3"]
         output += entities[2]   # Time
+        output += scripts["confirm_movie4"]
+
+    elif intent == "confirm_show" and entities is not None:
+        output += scripts["confirm_show1"]
+        output += entities[0]   # Show name
+        output += scripts["confirm_movie2"]
+        output += entities[1]   # Show day
+        output += scripts["confirm_movie3"]
+        output += entities[2]   # Show time
+        output += scripts["confirm_movie4"]
+
+    elif intent == "confirm_deletion" and entities is not None:
+        output += scripts["confirm_deletion1"]
+        output += entities[0]   # Event day
+        output += scripts["confirm_deletion2"]
+        output += entities[1]   # Event time
+        output += scripts["confirm_deletion3"]
 
     elif intent == "calendar_overlap" and entities is not None:
         output += scripts["calendar_overlap1"]
@@ -222,7 +288,6 @@ scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
 scripts["show_tv1"] = "Okay, here are listings for "
 scripts["show_tv2"] = ". There is a showing at "
-scripts["show_tv3"] = ". Do you want to add it to your calendar?"
 scripts["add_to_calendar1"] = "Okay, "
 scripts["add_to_calendar2"] = " has been added to your calendar."
 scripts["remove_from_calendar1"] = "Okay, "
@@ -230,7 +295,14 @@ scripts["remove_from_calendar2"] = " has been removed from your calendar."
 scripts["confirm_movie1"] = "Okay, so an event at the "
 scripts["confirm_movie2"] = " to see "
 scripts["confirm_movie3"] = " at "
-scripts["confirm_show"] = ""
+scripts["confirm_movie4"] = ". Is that correct?"
+scripts["confirm_show1"] = "Okay, so an event to see "
+scripts["confirm_show2"] = " on "
+scripts["confirm_show3"] = " at "
+scripts["confirm_show4"] = ". Is that correct?"
+scripts["confirm_deletion1"] = "Okay, so you want to delete the event on "
+scripts["confirm_deletion2"] = " at "
+scripts["confirm_deletion3"] = " . Is that correct?"
 scripts["no_tv_shows"] = "I'm sorry, I couldn't find anything about "
 scripts["calendar_overlap1"] = "There is already an event to watch "
 scripts["calendar_overlap2"] = " at that time! I cannot save this event"
