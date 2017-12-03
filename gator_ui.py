@@ -175,7 +175,7 @@ class Ui_Form(object):
         if(self.isListening == False):
             self.speakBtn.setToolTip("Listening to User...")
             self.isListening=True
-        else
+        else:
             self.speakBtn.setToolTip("Not listening right now...")
             self.isListening = False
 
