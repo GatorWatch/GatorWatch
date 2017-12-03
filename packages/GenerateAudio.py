@@ -252,7 +252,7 @@ def generate(intent, entities):
         output += scripts["recommend_movie1"]
         output += entities[0]   # Movie title
         output += scripts["recommend_movie2"]
-        output += entities[1]   # Movie rating
+        output += str(entities[1])   # Movie rating
         output += "."
 
     elif intent == "recommend_movie_genre" and entities is not None:
@@ -261,7 +261,7 @@ def generate(intent, entities):
         output += scripts["recommend_movie_genre2"]
         output += entities[1]   # Movie title
         output += scripts["recommend_movie_genre3"]
-        output += entities[2]   # Movie rating
+        output += str(entities[2])   # Movie rating
 
 
     elif intent == "no_tv_shows" and entities is not None:
@@ -275,7 +275,7 @@ def generate(intent, entities):
         output += entities[1]   # Movie name
         output += scripts["confirm_movie3"]
         output += entities[2]   # Time
-        output += scripts["confirm_movies4"]
+        output += scripts["confirm_movie4"]
 
     elif intent == "confirm_show" and entities is not None:
         output += scripts["confirm_show1"]
