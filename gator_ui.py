@@ -557,9 +557,13 @@ class Ui_Form(object):
                                 os.remove("audio_files/temp.mp3")
 
                         else:
-                            # Need to work on this - either kick out the user or modify entities
-                            negations += 1
-                            print("Do you want to change the theater, movie name, time, or cancel the event?")
+                            intent = "show_local"
+                            Logging.write("System", "Okay, not creating the event. What else do you want to do?")
+                            self.msgLayout.addWidget(MyWidget("Okay, not creating the event. What else do you want to do?"))
+                            playsound("packages/audio_files/not_creating_event.mp3")
+
+
+                            #print("Do you want to change the theater, movie name, time, or cancel the event?")
 
 
                     elif previousIntent == "show_tv":
@@ -627,8 +631,6 @@ class Ui_Form(object):
                                 playsound("packages/audio_files/invalid_show_day.mp3")
                                 misunderstands += 1
 
-
-                        print("Time")
                         Logging.write("System", "And the time of the show?")
                         self.msgLayout.addWidget(MyWidget("And the time of the show?"))
                         playsound("packages/audio_files/show_time_question.mp3")
@@ -708,10 +710,12 @@ class Ui_Form(object):
                                 playsound("audio_files/temp.mp3")
                                 os.remove("audio_files/temp.mp3")
 
-
                         else:
                             negations += 1
-                            print("Do you want to change the show name, time, or cancel the event?")
+                            intent = "show_tv"
+                            Logging.write("System", "Okay, not creating the event. What else do you want to do?")
+                            self.msgLayout.addWidget(MyWidget("Okay, not creating the event. What else do you want to do?"))
+                            playsound("packages/audio_files/not_creating_event.mp3")
 
                     else:
                         #print("Cannot do that")
@@ -772,6 +776,7 @@ class Ui_Form(object):
 
                                 if event_time_exists:
                                     break
+
                                 else:
                                     Logging.write("System", "You have no event at that time. Please state another time.")
                                     self.msgLayout.addWidget(MyWidget("You have no event at that time. Please state another time."))
@@ -814,7 +819,10 @@ class Ui_Form(object):
 
                             else:
                                 negations += 1
-                                print("Okay, do you want to create a new event to add?")
+                                intent = "view_calendar"
+                                Logging.write("System", "Okay, the event won't be deleted. What else do you want to do?")
+                                self.msgLayout.addWidget(MyWidget("Okay, the event won't be deleted. What else do you want to do?"))
+                                playsound("packages/audio_files/not_deleting_event.mp3")
 
                     # Cannot delete event unless the user has just viewed local movies or TV listings
                     else:

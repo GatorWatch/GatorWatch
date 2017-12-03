@@ -214,6 +214,14 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_deleted.mp3")
 
+    text = "Okay, the event won't be created. What else do you want to do?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/not_creating_event.mp3")
+
+    text = "Okay, the event won't be deleted. What else do you want to do?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/not_deleting_event.mp3")
+
 
 # Generates an audio file given the intent and entities
 # Returns a string of what the audio file says
@@ -341,4 +349,4 @@ scripts["calendar_overlap2"] = " at that time! I cannot save this event"
 # playsound("test.mp3")
 
 #generate_presets1()
-generate_presets2()
+#generate_presets2()
