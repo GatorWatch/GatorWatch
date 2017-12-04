@@ -231,20 +231,23 @@ class Ui_Form(object):
         # If the userInput matches one of the keywords, increase that particular intent
         for word in userInput:
             word = word.lower()
-            if word in lookupKeywords:
-                interpretation["intent_ranking"][intentIndexMap["lookup_details"]] += CONFIDENCE_BOOST
-            if word == "calendar":
-                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
-                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
-                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            if word in addCalendarKeywords:
-                interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            elif word in removeCalendarKeywords:
-                interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            elif word in viewCalendarKeywords:
-                interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            elif word in instructionsKeywords:
-                interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
+            try:
+                if word in lookupKeywords:
+                    interpretation["intent_ranking"][intentIndexMap["lookup_details"]] += CONFIDENCE_BOOST
+                if word == "calendar":
+                    interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                    interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                    interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                if word in addCalendarKeywords:
+                    interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                elif word in removeCalendarKeywords:
+                    interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                elif word in viewCalendarKeywords:
+                    interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
+                elif word in instructionsKeywords:
+                    interpretation["intent_ranking"][intentIndexMap["show_instructions"]]["confidence"] += CONFIDENCE_BOOST
+            except:
+                print("No intent")
 
         # After readjusting the confidences, find the intent name with the highest confidence
         newIntent = interpretation["intent"]["name"]
@@ -1132,7 +1135,7 @@ class Ui_Form(object):
 
                         confidence = 0
 
-                        while confidence <= 0:
+                        while confidence <= CONFIDENCE_THRESHHOLD:
                             userInput = None
                             while userInput is None:
                                 userInput = self.rerun()
@@ -1326,7 +1329,7 @@ class Ui_Form(object):
 
                             confidence = 0
 
-                            while confidence <= 0:
+                            while confidence <= CONFIDENCE_THRESHHOLD:
                                 userInput = None
                                 while userInput is None:
                                     userInput = self.rerun()
