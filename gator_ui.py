@@ -390,6 +390,7 @@ class Ui_Form(object):
                         # Pick a random movie to say
                         random.seed()
                         number = random.randint(0, len(popularMovies))
+
                         output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage], num=num)
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
@@ -398,6 +399,7 @@ class Ui_Form(object):
                         playsound(path)
                         num += 1
                         #os.remove("audio_files/temp.mp3")
+
 
                         itemLength = len(popularMovies)
                         #populate table with popularmovies items
@@ -611,11 +613,13 @@ class Ui_Form(object):
 
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
+
                         path = "audio_files/temp" + str(num) + ".mp3"
                         playsound(path)
                         num += 1
                         #os.remove("audio_files/temp.mp3")
                         #populate table with listings items
+
                         if(itemLength+self.currRow < 499):
                             for listing in listings:
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
@@ -1429,6 +1433,9 @@ class Ui_Form(object):
             pass
 
 if __name__ == '__main__':
+    print(isUserAdmin())
+    # if(os.path.isfile('audio_files/temp.mp3') == True):
+    #     os.remove("audio_files/temp.mp3")
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
     m = sr.Microphone()
@@ -1441,6 +1448,7 @@ if __name__ == '__main__':
     previousIntent = None
     start = True
 
+
     num = 0
 
     negations = 0
@@ -1451,6 +1459,7 @@ if __name__ == '__main__':
         os.remove("audio_files/temp.mp3")
     except:
         print("No file to remove")
+
 
     ex = App()
     try:
