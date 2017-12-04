@@ -153,7 +153,7 @@ class Ui_Form(object):
         self.msgScrollArea.setWidget(self.msgScrollContents)
         self.msgScrollLayout.addWidget(self.msgScrollArea)
         self.gridLayout.addLayout(self.msgScrollLayout, 0, 0, 1, 1)
-        self.msgLayout.addWidget(self.speakBtn)
+        #self.msgLayout.addWidget(self.speakBtn)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.speakBtn.clicked.connect(self.buttonClick)
