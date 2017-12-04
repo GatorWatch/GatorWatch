@@ -46,6 +46,7 @@ class App(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.showMaximized()
+
 class Bubble(QtWidgets.QLabel):
     def __init__(self,text):
         super(Bubble,self).__init__(text)
@@ -183,16 +184,16 @@ class Ui_Form(object):
         global timeouts
         try:
             with m as source: 
-                self.toolTipToggle()
+                #self.toolTipToggle()
                 audio = r.listen(source)
             userInput = r.recognize_google(audio)
-            self.toolTipToggle()
+            #self.toolTipToggle()
             # userInput = input("Input: ")
             return userInput
 
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
-            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
+            self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
             Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
             playsound("packages/audio_files/misunderstood.mp3")
             userInput = None
@@ -201,8 +202,8 @@ class Ui_Form(object):
 
         except sr.RequestError as e:
             print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-            self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
-            Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+            self.msgLayout.addWidget(MyWidget("Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+            Logging.write("System", "Couldn't request results from Google Speech Recognition service.")
             playsound("packages/audio_files/google_fail.mp3")
             userInput = None
             return userInput
@@ -300,17 +301,14 @@ class Ui_Form(object):
 
         try:
             print("Say something!")
-            self.msgLayout.addWidget(MyWidget("Say something!\n"))
-
             
             with m as source:  
-                self.toolTipToggle()
+                #self.toolTipToggle()
                 audio = r.listen(source)
-
 
             try:
                 # recognize speech using Google Speech Recognition                 
-                self.toolTipToggle()
+                # self.toolTipToggle()
                 userInput = r.recognize_google(audio)
                 # userInput = input("Input: ")
                 Logging.write("User", userInput)
@@ -406,6 +404,17 @@ class Ui_Form(object):
                         self.tableWidget.resizeColumnsToContents()
                     else:
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
+
+                        random.seed()
+                        number = random.randint(0, len(popularMoviesWithGenres))
+                        output = GenerateAudio.generate(intent="recommend_movie_genre", entities=[userGenres[0], popularMoviesWithGenres[number].title, popularMoviesWithGenres[number].voteAverage], num=num)
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+
                         #populate table with popularMoviesWithGenres items
                         itemLength = len(popularMoviesWithGenres)
                         if (itemLength+self.currRow < 499):
@@ -434,6 +443,7 @@ class Ui_Form(object):
                             movieToLookup = entities[0]["value"]
 
                     if movieToLookup is None or movieToLookup == "":
+
                         Logging.write("System", "Okay, what movie do you want to know more about?")
                         self.msgLayout.addWidget(MyWidget("Okay, what movie do you want to know more about?"))
                         playsound("packages/audio_files/find_movie.mp3")
@@ -467,44 +477,54 @@ class Ui_Form(object):
 
                             self.tableMode = 3   
 
-                    output = GenerateAudio.generate(intent, entities=[movieToLookup], num=num)
-                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
-                    
-                    output = GenerateAudio.generate(intent, entities=[movieToLookup])
-                    
-                    
-                    Logging.write("System", output)
-                    self.msgLayout.addWidget(MyWidget(output))
-                    self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
-                    path = "audio_files/temp" + str(num) + ".mp3"
-                    playsound(path)
-                    num += 1
+                    temp_movie = movieToLookup
+                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)
 
-                    # Showing similar movies in development
-                    similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
+                    if movieToLookup == []:
+                        #print("There is no movie")
+                        output = GenerateAudio.generate("no_movie", entities=[temp_movie], num=num)
+                        Logging.write(output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
 
-
-                    #os.remove("audio_files/temp.mp3")
-
-                    #populate table with movieToLookup items
-                    itemLength = len(movieToLookup)
-                    if (itemLength+self.currRow < 499):
-                        for movieItem in movieToLookup:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                            self.currRow+=1
                     else:
-                        self.tableWidget.clear()
-                        self.currRow = 0
-                        for movieItem in movieToLookup:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                            self.currRow+=1
-                    self.tableWidget.resizeColumnsToContents()
+                        output = GenerateAudio.generate(intent, entities=[movieToLookup], num=num)
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        #self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+
+
+                        # Showing similar movies in development
+                        similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
+
+
+                        #os.remove("audio_files/temp.mp3")
+
+                        #populate table with movieToLookup items
+                        itemLength = len(movieToLookup)
+                        if (itemLength+self.currRow < 499):
+                            for movieItem in movieToLookup:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        else:
+                            self.tableWidget.clear()
+                            self.currRow = 0
+                            for movieItem in movieToLookup:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        self.tableWidget.resizeColumnsToContents()
+
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
                     userTvShow = None
@@ -1185,14 +1205,18 @@ class Ui_Form(object):
                 # Check time every time after user hits speak button and finished
                 reminder = CalendarSystem.checkTime()
                 if type(reminder) is not int:
-                     print("Reminder!")
-
-
+                    # You have an event coming up in 30 minutes to watch [name] on [channel_name]
+                    output = GenerateAudio.generate(intent="reminder", entities=[reminder.name, reminder.channel], num=num)
+                    Logging.write("System", output)
+                    self.msgLayout.addWidget(MyWidget(output))
+                    path = "audio_files/temp" + str(num) + ".mp3"
+                    playsound(path)
+                    num += 1
 
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
-                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
-                Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?\n"))
+                Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                 playsound("packages/audio_files/misunderstood.mp3")
                 timeouts += 1
 
