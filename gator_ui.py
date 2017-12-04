@@ -235,7 +235,7 @@ class Ui_Form(object):
                 interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
                 interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            elif word in addCalendarKeywords:
+            if word in addCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in removeCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
@@ -325,11 +325,13 @@ class Ui_Form(object):
                 entities = interpretation["entities"]
                 print("The intent was " + str(intent))
 
+                CONFIDENCE_THRESHHOLD = 0.15
+
                 if (previousIntent is None):
                     previousIntent = intent
 
                 # TODO: Find a way to handle low confidence intents
-                if (confidence < 0.0):
+                if (confidence < CONFIDENCE_THRESHHOLD):
                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                     self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                     playsound("packages/audio_files/misunderstood.mp3")
@@ -501,7 +503,6 @@ class Ui_Form(object):
 
                         # Showing similar movies in development
                         similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
-
 
                         #os.remove("audio_files/temp.mp3")
 
@@ -860,15 +861,13 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence < 0.0):
+                            if (confidence < CONFIDENCE_THRESHHOLD):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                                 playsound("packages/audio_files/misunderstood.mp3")
                                 confidence = 0
                                 misunderstands += 1
-
-
 
                         if intent == "affirm":
                             # Add to calendar
@@ -1035,7 +1034,7 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence < 0.0):
+                            if (confidence < CONFIDENCE_THRESHHOLD):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
@@ -1155,7 +1154,7 @@ class Ui_Form(object):
                                 intent = interpretation["intent"]["name"]
 
                                 confidence = interpretation["intent"]["confidence"]
-                                if (confidence < 0.0):
+                                if (confidence < CONFIDENCE_THRESHHOLD):
                                     # print("Sorry, could you rephrase that?")
                                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                     self.msgLayout.addWidget(

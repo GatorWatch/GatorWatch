@@ -877,6 +877,130 @@
         "text": "let me view my calendar so far",
         "intent": "view_calendar",
         "entities": []
+      },
+      {
+        "text": "im done for now",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "show me something terrifying",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 18,
+            "end": 28,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "show me whats playing nearby",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "show me what is playing in theaters right now",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "let me see what films are playing tonight",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "are any good movies playing right now",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "what is there to see tonight",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I'm not sure what I'm suppose to do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what is the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can I do with the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "how do I use the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "tell me about this calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what is a calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can I do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what am I allowed to do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can you do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "help me do something",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "I want to know more about this system",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what else can I do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "I want to search a tv show",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "I want to lookup a show",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "find me something that will make me laugh",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 36,
+            "end": 41,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
       }
     ],
     "entity_synonyms": [

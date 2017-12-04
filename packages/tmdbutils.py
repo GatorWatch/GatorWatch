@@ -32,8 +32,8 @@ class Movie:
         self.overview = overview
         self.posterURL += posterURL
         self.genreids = genreids
-        for genre in genreids:
-            self.genreStrings.append(genreIdMap[genre]) 
+        for g in genreids:
+            self.genreStrings.append(genreIdMap[g]) 
 
 class Tv:
     name = None
