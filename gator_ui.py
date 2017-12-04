@@ -1387,7 +1387,7 @@ class Ui_Form(object):
                     self.msgLayout.addWidget(MyWidget("You can ask for what’s showing around here today, movie suggestions, or information about a TV show or movie. You also have a calendar to store TV shows or movie events."))
                     playsound("packages/audio_files/commands.mp3")
 
-                elif intent == "calendar_question":
+                elif intent == "show_calendar_instructions":
                     Logging.write("System", "The calendar stores listings for TV shows and local movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or local movie listing to the calendar.")
                     self.msgLayout.addWidget(MyWidget("The calendar stores listings for TV shows and local movies and reminds you thirty minutes before they happen. You can tell me to add any TV show or local movie listing to the calendar."))
                     playsound("packages/audio_files/calendar.mp3")
