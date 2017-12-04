@@ -295,11 +295,11 @@ def generate(intent, entities, num):
     elif intent == "confirm_show" and entities is not None:
         output += scripts["confirm_show1"]
         output += entities[0]   # Show name
-        output += scripts["confirm_movie2"]
+        output += scripts["confirm_show2"]
         output += entities[1]   # Show day
-        output += scripts["confirm_movie3"]
+        output += scripts["confirm_show3"]
         output += entities[2]   # Show time
-        output += scripts["confirm_movie4"]
+        output += scripts["confirm_show4"]
 
     elif intent == "confirm_deletion" and entities is not None:
         output += scripts["confirm_deletion1"]
