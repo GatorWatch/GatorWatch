@@ -264,6 +264,7 @@ class Ui_Form(object):
 
     def decipherTime(self, input_audio):
         input_audio = input_audio.lower()
+        print(input_audio)
         hour = ""
         if "o'clock" in input_audio or "o clock" in input_audio or "clock " in input_audio:
             i = 0
@@ -275,10 +276,15 @@ class Ui_Form(object):
             tokens = input_audio.split()
             hour = tokens[0]
 
+        if ":" not in hour:
+            hour += ":00"
+
         if "p.m." in input_audio or "pm" in input_audio or "P.M." in input_audio or "PM" in input_audio:
             hour += "pm"
         else:
             hour += "am"
+
+        print(hour)
 
         return hour
 
@@ -1105,7 +1111,7 @@ class Ui_Form(object):
                                 tokens = show_name.lower().split()
                                 for token in tokens:
                                     if token in listing.name.lower():
-                                        if show_day == listing.date:
+                                        if temp_day == listing.date:
                                             if show_time == listing.time:
                                                 show_time_exists = True
                                                 event = listing
