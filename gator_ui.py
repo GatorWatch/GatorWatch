@@ -45,7 +45,7 @@ class App(QWidget):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        self.show()
+        self.showMaximized()
 class Bubble(QtWidgets.QLabel):
     def __init__(self,text):
         super(Bubble,self).__init__(text)
@@ -157,9 +157,11 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.speakBtn.clicked.connect(self.buttonClick)
         self.currRow = 0
-        #variable to know which table header to print 0=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
+        #variable to know which table header to print 3=tmdb_movies, 1=local_movies, 2= tv show, 3 =calender
         self.tableMode= 0
+        self.isListening = False
         self.speechApp()
+        self.speakBtn.setToolTip("Not listening right now...")
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -169,12 +171,23 @@ class Ui_Form(object):
     def buttonClick(self):
         self.speechApp()
 
+    def toolTipToggle(self):
+        if(self.isListening == False):
+            self.speakBtn.setToolTip("Listening to User...")
+            self.isListening=True
+        else:
+            self.speakBtn.setToolTip("Not listening right now...")
+            self.isListening = False
+
     def rerun(self):
         global timeouts
         try:
-            # with m as source: audio = r.listen(source)
-            # userInput = r.recognize_google(audio)
-            userInput = input("Input: ")
+            with m as source: 
+                self.toolTipToggle()
+                audio = r.listen(source)
+            userInput = r.recognize_google(audio)
+            self.toolTipToggle()
+            # userInput = input("Input: ")
             return userInput
 
         except sr.UnknownValueError:
@@ -251,7 +264,6 @@ class Ui_Form(object):
         global negations
         global misunderstands
         global timeouts
-
         if start:
             Logging.write("System", "Hello! I’m GatorWatch - I help you find movies and TV shows!")
             self.msgLayout.addWidget(MyWidget("Hello! I’m GatorWatch - I help you find movies and TV shows!"))
@@ -269,12 +281,15 @@ class Ui_Form(object):
             self.msgLayout.addWidget(MyWidget("Say something!\n"))
 
             
-            # with m as source: audio = r.listen(source)
+            with m as source:  
+                self.toolTipToggle()
+                audio = r.listen(source)
 
             try:
-                # recognize speech using Google Speech Recognition
-                # userInput = r.recognize_google(audio)
-                userInput = input("Input: ")
+                # recognize speech using Google Speech Recognition                 
+                self.toolTipToggle()
+                userInput = r.recognize_google(audio)
+                # userInput = input("Input: ")
                 Logging.write("User", userInput)
 
                 print("You said {}".format(userInput))
@@ -304,21 +319,21 @@ class Ui_Form(object):
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
                     else:    
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
 
                     # Attempt to extract genres from the user input
                     # If we find genres, do a search with that list
@@ -406,29 +421,33 @@ class Ui_Form(object):
                     if (self.currRow == 499):
                         self.tableWidget.clear()
                         self.currRow = 0
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0
+                            self.tableMode = 3
                     else:    
-                        if (self.tableMode != 0):
+                        if (self.tableMode != 3):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
                             self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
-                            self.tableMode = 0   
+                            self.tableMode = 3   
 
-                    output = GenerateAudio.generate(intent, entities=[movieToLookup])
+                    
                     movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
+                    
+                    output = GenerateAudio.generate(intent, entities=[movieToLookup])
+                    
+                    
                     Logging.write("System", output)
                     self.msgLayout.addWidget(MyWidget(output))
-                    self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
                     playsound("audio_files/temp.mp3")
 
+                    # Showing similar movies in development
                     similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
 
                     os.remove("audio_files/temp.mp3")
@@ -1107,7 +1126,7 @@ class Ui_Form(object):
                 elif intent == "bye":
                     Logging.write("System", "Okay, see you later!")
                     self.msgLayout.addWidget(MyWidget("Okay, see you later!"))
-                    playsound("packages/audio_files/calendar.mp3")
+                    playsound("packages/audio_files/bye.mp3")
                     sys.exit()
 
                 elif intent == "bye":
@@ -1134,11 +1153,11 @@ class Ui_Form(object):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # r = sr.Recognizer() 
-    # m = sr.Microphone()
+    r = sr.Recognizer() 
+    m = sr.Microphone()
     print("A moment of silence, please...")
-    # with m as source: r.adjust_for_ambient_noise(source)
-    # print("Set minimum energy threshold to {}".format(r.energy_threshold))
+    with m as source: r.adjust_for_ambient_noise(source)
+    print("Set minimum energy threshold to {}".format(r.energy_threshold))
 
     theaters = []
     listings = []

@@ -106,4 +106,3 @@ config.py
 # trained models
 models/
 audio_files/temp.mp3
-calendar_times.xlsx
