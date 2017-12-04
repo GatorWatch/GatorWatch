@@ -16,7 +16,7 @@ def write(speaker, utterance):
 def end(negations, misunderstands, timeouts):
     global text
     global f
-    f = open(text, "w+")
+    #f = open(text, "w+")
     end_time = time.time()
     text = "End Seconds: " + str(end_time) + "\r\n"
     f.write(text)

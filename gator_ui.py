@@ -183,19 +183,21 @@ class Ui_Form(object):
     def rerun(self):
         global timeouts
         try:
-            # with m as source: 
+            with m as source: 
                 #self.toolTipToggle()
-                #audio = r.listen(source)
-            # userInput = r.recognize_google(audio)
+                audio = r.listen(source)
+            userInput = r.recognize_google(audio)
             #self.toolTipToggle()
-            userInput = input("Input: ")
+            # userInput = input("Input: ")
             return userInput
 
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
+
             self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing.\n"))
             Logging.write("System", "I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing.")
             playsound("packages/audio_files/misunderstood1.mp3")
+
             userInput = None
             timeouts += 1
             return userInput
@@ -230,12 +232,12 @@ class Ui_Form(object):
         for word in userInput:
             word = word.lower()
             if word in lookupKeywords:
-                interpretation["intent_ranking"][intentIndexMap["lookup_details"]]["confidence"] += CONFIDENCE_BOOST
+                interpretation["intent_ranking"][intentIndexMap["lookup_details"]] += CONFIDENCE_BOOST
             if word == "calendar":
                 interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
                 interpretation["intent_ranking"][intentIndexMap["view_calendar"]]["confidence"] += CONFIDENCE_BOOST
-            elif word in addCalendarKeywords:
+            if word in addCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["add_to_calendar"]]["confidence"] += CONFIDENCE_BOOST
             elif word in removeCalendarKeywords:
                 interpretation["intent_ranking"][intentIndexMap["remove_from_calendar"]]["confidence"] += CONFIDENCE_BOOST
@@ -301,19 +303,16 @@ class Ui_Form(object):
 
         try:
             print("Say something!")
-            self.msgLayout.addWidget(MyWidget("Say something!\n"))
-
             
-            # with m as source:  
+            with m as source:  
                 #self.toolTipToggle()
-                #audio = r.listen(source)
-
+                audio = r.listen(source)
 
             try:
                 # recognize speech using Google Speech Recognition                 
                 # self.toolTipToggle()
-                # userInput = r.recognize_google(audio)
-                userInput = input("Input: ")
+                userInput = r.recognize_google(audio)
+                # userInput = input("Input: ")
                 Logging.write("User", userInput)
 
                 print("You said {}".format(userInput))
@@ -328,11 +327,16 @@ class Ui_Form(object):
                 entities = interpretation["entities"]
                 print("The intent was " + str(intent))
 
+                CONFIDENCE_THRESHHOLD = 0.15
+
                 if (previousIntent is None):
                     previousIntent = intent
 
                 # TODO: Find a way to handle low confidence intents
-                if (confidence <= 0.0):
+
+
+                if (confidence < CONFIDENCE_THRESHHOLD):
+
                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                     self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                     playsound("packages/audio_files/misunderstood.mp3")
@@ -494,7 +498,7 @@ class Ui_Form(object):
                     if movieToLookup == []:
                         #print("There is no movie")
                         output = GenerateAudio.generate("no_movie", entities=[temp_movie], num=num)
-                        Logging.write(output)
+                        Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
                         path = "audio_files/temp" + str(num) + ".mp3"
                         playsound(path)
@@ -504,15 +508,10 @@ class Ui_Form(object):
                         output = GenerateAudio.generate(intent, entities=[movieToLookup[0].title], num=num)
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
-                        #self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
                         path = "audio_files/temp" + str(num) + ".mp3"
                         playsound(path)
                         num += 1
-
-
-                        # Showing similar movies in development
-                        similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup[0].id)[0]
-
+                        #self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
 
                         #os.remove("audio_files/temp.mp3")
 
@@ -892,7 +891,7 @@ class Ui_Form(object):
 
                         confidence = 0
 
-                        while confidence <= 0:
+                        while confidence <= CONFIDENCE_THRESHHOLD:
                             userInput = None
                             while userInput is None:
                                 userInput = self.rerun()
@@ -915,15 +914,15 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence <= 0.0):
+
+                            if (confidence < CONFIDENCE_THRESHHOLD):
+
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                                 playsound("packages/audio_files/misunderstood.mp3")
                                 confidence = 0
                                 misunderstands += 1
-
-
 
                         if intent == "affirm":
                             # Add to calendar
@@ -1156,7 +1155,8 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence <= 0.0):
+
+                            if (confidence < CONFIDENCE_THRESHHOLD):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
@@ -1347,7 +1347,8 @@ class Ui_Form(object):
                                 intent = interpretation["intent"]["name"]
 
                                 confidence = interpretation["intent"]["confidence"]
-                                if (confidence <= 0.0):
+
+                                if (confidence < CONFIDENCE_THRESHHOLD):
                                     # print("Sorry, could you rephrase that?")
                                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                     self.msgLayout.addWidget(
@@ -1407,8 +1408,8 @@ class Ui_Form(object):
 
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
-                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again?\n"))
-                Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
+                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?\n"))
+                Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                 playsound("packages/audio_files/misunderstood.mp3")
                 timeouts += 1
 
@@ -1423,11 +1424,11 @@ class Ui_Form(object):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # r = sr.Recognizer() 
-    # m = sr.Microphone()
+    r = sr.Recognizer() 
+    m = sr.Microphone()
     print("A moment of silence, please...")
-    # with m as source: r.adjust_for_ambient_noise(source)
-    # print("Set minimum energy threshold to {}".format(r.energy_threshold))
+    with m as source: r.adjust_for_ambient_noise(source)
+    print("Set minimum energy threshold to {}".format(r.energy_threshold))
 
     theaters = []
     listings = []
