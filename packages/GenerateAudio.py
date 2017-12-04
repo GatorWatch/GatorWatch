@@ -46,6 +46,14 @@ def generate_presets1():
     audio.save("audio_files/misunderstood.mp3")
     #playsound("audio_files/misunderstood.mp3")
 
+    text = "I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/misunderstood1.mp3")
+
+    text = "Okay, I've stopped what I was doing. What do you want to do now?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/cancellation.mp3")
+
     text = "I’m sorry, I cannot do that. If you need help about what you can do, ask!"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_command.mp3")
@@ -119,27 +127,27 @@ def generate_presets2():
     Calendar Corrections
     '''
     text = "I'm sorry, that theater is not in Gainesville. "
-    text += "The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."
+    text += "The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_theater.mp3")
 
-    text = "I'm sorry, that movie does not exist. Please state one on the list."
+    text = "I'm sorry, that movie does not exist. Please state one on the list. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_movie_name.mp3")
 
-    text = "That time is not available. Please state one on the list."
+    text = "That time is not available. Please state one on the list. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_movie_time.mp3")
 
-    text = "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found."
+    text = "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_name.mp3")
 
-    text = "I'm sorry, I didn't find that there is a showing on that day. Please say another day."
+    text = "I'm sorry, I didn't find that there is a showing on that day. Please say another day. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_day.mp3")
 
-    text = "I'm sorry, I didn't find that there is a showing at that time. Please say another time."
+    text = "I'm sorry, I didn't find that there is a showing at that time. Please say another time. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_time.mp3")
 
@@ -198,7 +206,7 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_day_question.mp3")
 
-    text = "You have no event at on that date. Please state another date."
+    text = "You have no event at on that date. Please state another date. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_event_day.mp3")
 
@@ -206,7 +214,7 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_time_question.mp3")
 
-    text = "You have no event at that time. Please state another time."
+    text = "You have no event at that time. Please state another time. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_event_time.mp3")
 
