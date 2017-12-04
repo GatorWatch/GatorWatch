@@ -46,6 +46,14 @@ def generate_presets1():
     audio.save("audio_files/misunderstood.mp3")
     #playsound("audio_files/misunderstood.mp3")
 
+    text = "I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/misunderstood1.mp3")
+
+    text = "Okay, I've stopped what I was doing. What do you want to do now?"
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/cancellation.mp3")
+
     text = "I’m sorry, I cannot do that. If you need help about what you can do, ask!"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_command.mp3")
@@ -119,27 +127,27 @@ def generate_presets2():
     Calendar Corrections
     '''
     text = "I'm sorry, that theater is not in Gainesville. "
-    text += "The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."
+    text += "The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_theater.mp3")
 
-    text = "I'm sorry, that movie does not exist. Please state one on the list."
+    text = "I'm sorry, that movie does not exist. Please state one on the list. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_movie_name.mp3")
 
-    text = "That time is not available. Please state one on the list."
+    text = "That time is not available. Please state one on the list. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_movie_time.mp3")
 
-    text = "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found."
+    text = "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_name.mp3")
 
-    text = "I'm sorry, I didn't find that there is a showing on that day. Please say another day."
+    text = "I'm sorry, I didn't find that there is a showing on that day. Please say another day. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_day.mp3")
 
-    text = "I'm sorry, I didn't find that there is a showing at that time. Please say another time."
+    text = "I'm sorry, I didn't find that there is a showing at that time. Please say another time. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_show_time.mp3")
 
@@ -198,7 +206,7 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_day_question.mp3")
 
-    text = "You have no event at on that date. Please state another date."
+    text = "You have no event at on that date. Please state another date. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_event_day.mp3")
 
@@ -206,11 +214,11 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_time_question.mp3")
 
-    text = "You have no event at that time. Please state another time."
+    text = "You have no event at that time. Please state another time. You can also cancel what I am doing."
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_event_time.mp3")
 
-    text = "Okay, the event has been deleted from your calendar."
+    text = "Okay, the event has been deleted from your calendar. What else do you want to do?"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_deleted.mp3")
 
@@ -305,6 +313,21 @@ def generate(intent, entities, num):
         output += entities[0]   # Event name
         output += scripts["calendar_overlap2"]
 
+    elif intent == "no_movie" and entities is not None:
+        output += scripts["no_movie"]
+        output += entities[0]
+        output += "."
+
+    elif intent == "reminder" and entities is not None:
+        output += scripts["reminder1"]
+        output += entities[0]   # Event name
+        output += scripts["reminder2"]
+        output += entities[1]   # Event channel/location
+        output += "."
+
+    else:
+        return
+
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
     path = "audio_files/temp" + str(num) + ".mp3"
@@ -341,8 +364,11 @@ scripts["confirm_deletion1"] = "Okay, so you want to delete the event on "
 scripts["confirm_deletion2"] = " at "
 scripts["confirm_deletion3"] = " . Is that correct?"
 scripts["no_tv_shows"] = "I'm sorry, I couldn't find anything about "
+scripts["no_movie"] = "I'm sorry, I couldn't find anything on "
 scripts["calendar_overlap1"] = "There is already an event to watch "
 scripts["calendar_overlap2"] = " at that time! I cannot save this event"
+scripts["reminder1"] = "You have an event coming up in 30 minutes to watch "
+scripts["reminder2"] = " on "
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")

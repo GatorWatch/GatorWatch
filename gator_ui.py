@@ -46,6 +46,7 @@ class App(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.showMaximized()
+
 class Bubble(QtWidgets.QLabel):
     def __init__(self,text):
         super(Bubble,self).__init__(text)
@@ -192,17 +193,17 @@ class Ui_Form(object):
 
         except sr.UnknownValueError:
             print("Oops! Didn't catch that")
-            self.msgLayout.addWidget(MyWidget("GatorWatch: I'm sorry, I didn't get that. Can say that again?\n"))
-            Logging.write("System", "I'm sorry, I didn't get that. Can say that again?")
-            playsound("packages/audio_files/misunderstood.mp3")
+            self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing.\n"))
+            Logging.write("System", "I'm sorry, I didn't get that. Can say that again? You can also cancel what I am doing.")
+            playsound("packages/audio_files/misunderstood1.mp3")
             userInput = None
             timeouts += 1
             return userInput
 
         except sr.RequestError as e:
             print("Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-            self.msgLayout.addWidget(MyWidget("GatorWatch: Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
-            Logging.write("System", "GatorWatch: Couldn't request results from Google Speech Recognition service.")
+            self.msgLayout.addWidget(MyWidget("Couldn't request results from Google Speech Recognition service. {0}\n".format(e)))
+            Logging.write("System", "Couldn't request results from Google Speech Recognition service.")
             playsound("packages/audio_files/google_fail.mp3")
             userInput = None
             return userInput
@@ -267,9 +268,9 @@ class Ui_Form(object):
             hour += ":00"
         else:
             tokens = input_audio.split()
-            hour = input_audio[0]
+            hour = tokens[0]
 
-        if "p.m." in input_audio:
+        if "p.m." in input_audio or "pm" in input_audio or "P.M." in input_audio or "PM" in input_audio:
             hour += "pm"
         else:
             hour += "am"
@@ -331,7 +332,7 @@ class Ui_Form(object):
                     previousIntent = intent
 
                 # TODO: Find a way to handle low confidence intents
-                if (confidence < 0.0):
+                if (confidence <= 0.0):
                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                     self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
                     playsound("packages/audio_files/misunderstood.mp3")
@@ -406,6 +407,17 @@ class Ui_Form(object):
                         self.tableWidget.resizeColumnsToContents()
                     else:
                         popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
+
+                        random.seed()
+                        number = random.randint(0, len(popularMoviesWithGenres))
+                        output = GenerateAudio.generate(intent="recommend_movie_genre", entities=[userGenres[0], popularMoviesWithGenres[number].title, popularMoviesWithGenres[number].voteAverage], num=num)
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+
                         #populate table with popularMoviesWithGenres items
                         itemLength = len(popularMoviesWithGenres)
                         if (itemLength+self.currRow < 499):
@@ -443,6 +455,14 @@ class Ui_Form(object):
                             movieToLookup = self.rerun()
 
                         Logging.write("User", movieToLookup)
+                        self.msgLayout.addWidget(MyWidget(format(movieToLookup), left=False))
+
+                        if "cancel" in movieToLookup or "stop" in movieToLookup:
+                            Logging.write("System", "Okay, I've stopped what I was doing. What do you want to do now?")
+                            self.msgLayout.addWidget(MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                            playsound("packages/audio_files/cancellation.mp3")
+                            return
+
                         # Print what user says
                         self.msgLayout.addWidget(MyWidget(format(movieToLookup), left=False))
                     #print tmdb_movie table header
@@ -468,40 +488,53 @@ class Ui_Form(object):
 
                             self.tableMode = 3   
 
-                    output = GenerateAudio.generate(intent, entities=[movieToLookup], num=num)
-                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)[0]
-                    Logging.write("System", output)
-                    self.msgLayout.addWidget(MyWidget(output))
-                    self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
-                    path = "audio_files/temp" + str(num) + ".mp3"
-                    playsound(path)
-                    num += 1
+                    temp_movie = movieToLookup
+                    movieToLookup = tmdbutils.searchForMovie(movieToLookup)
 
-                    # Showing similar movies in development
-                    similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup.id)[0]
+                    if movieToLookup == []:
+                        #print("There is no movie")
+                        output = GenerateAudio.generate("no_movie", entities=[temp_movie], num=num)
+                        Logging.write(output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
 
-
-                    #os.remove("audio_files/temp.mp3")
-
-                    #populate table with movieToLookup items
-                    itemLength = len(movieToLookup)
-                    if (itemLength+self.currRow < 499):
-                        for movieItem in movieToLookup:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                            self.currRow+=1
                     else:
-                        self.tableWidget.clear()
-                        self.currRow = 0
-                        for movieItem in movieToLookup:
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                            self.currRow+=1
-                    self.tableWidget.resizeColumnsToContents()
+                        output = GenerateAudio.generate(intent, entities=[movieToLookup[0].title], num=num)
+                        Logging.write("System", output)
+                        self.msgLayout.addWidget(MyWidget(output))
+                        #self.infoLayout.addWidget(MyWidget("Name: " + movieToLookup.title + "\nDescription: " + movieToLookup.overview))
+                        path = "audio_files/temp" + str(num) + ".mp3"
+                        playsound(path)
+                        num += 1
+
+
+                        # Showing similar movies in development
+                        similarMovie = tmdbutils.getSimilarMoviesById(movieToLookup[0].id)[0]
+
+
+                        #os.remove("audio_files/temp.mp3")
+
+                        #populate table with movieToLookup items
+                        itemLength = len(movieToLookup)
+                        if (itemLength+self.currRow < 499):
+                            for movieItem in movieToLookup:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        else:
+                            self.tableWidget.clear()
+                            self.currRow = 0
+                            for movieItem in movieToLookup:
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.currRow+=1
+                        self.tableWidget.resizeColumnsToContents()
 
                 # Command: Search show [show name]
                 elif (intent == "show_tv"):
@@ -519,8 +552,16 @@ class Ui_Form(object):
                         while (userTvShow is None or userTvShow == ""):
                             userTvShow = self.rerun()
 
+
                         Logging.write("User", userTvShow)
                         self.msgLayout.addWidget(MyWidget(format(userTvShow), left=False))
+
+                        if "cancel" in userTvShow.lower() or "stop" in userTvShow.lower():
+                            Logging.write("System", "Okay, I've stopped what I was doing. What do you want to do now?")
+                            self.msgLayout.addWidget(MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                            playsound("packages/audio_files/cancellation.mp3")
+                            return
+
                         # Print what user says
                     #print tv_listings table header
                     if (self.currRow == 499):
@@ -723,11 +764,19 @@ class Ui_Form(object):
                             Logging.write("User", theater_name)
                             self.msgLayout.addWidget(MyWidget(format(theater_name), left=False))
 
+                            if "cancel" in theater_name.lower() or "stop" in theater_name.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
+
                             # Need to verify if theater is one of the three - if it isn't, keep asking the user
                             # if theater_name.lower() != "hippodrome" and theater_name.lower() != "royal park" and theater_name.lower() != "butler town":
                             if "hippodrome" not in theater_name.lower() and "royal park" not in theater_name.lower() and "butler town" not in theater_name.lower():
-                                Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town."))
+                                Logging.write("System", "I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, that theater is not in Gainesville. The Gainesville theaters are: The Hippodrome, Royal Park, and Butler Town. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_theater.mp3")
                                 misunderstands += 1
 
@@ -750,6 +799,15 @@ class Ui_Form(object):
                             Logging.write("User", movie_name)
                             self.msgLayout.addWidget(MyWidget(format(movie_name), left=False))
 
+                            if "cancel" in movie_name.lower() or "stop" in movie_name.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
+
+
                             # Need to verify if movie name exists
                             for theater in theaters:
                                 if theater_name.lower() == theater.name.lower():
@@ -766,8 +824,8 @@ class Ui_Form(object):
                                 break
 
                             else:
-                                Logging.write("System", "I'm sorry, that movie does not exist. Please state one on the list.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, that movie does not exist. Please state one on the list."))
+                                Logging.write("System", "I'm sorry, that movie does not exist. Please state one on the list. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, that movie does not exist. Please state one on the list. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_movie_name.mp3")
                                 misunderstands += 1
 
@@ -785,6 +843,14 @@ class Ui_Form(object):
 
                             Logging.write("User", movie_time)
                             self.msgLayout.addWidget(MyWidget(format(movie_time), left=False))
+
+                            if "cancel" in movie_time.lower() or "stop" in movie_time.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
 
                             movie_time_exists = False
                             movie_time = self.decipherTime(movie_time)
@@ -809,8 +875,8 @@ class Ui_Form(object):
 
                             else:
                                 #print("Err")
-                                Logging.write("User", "That time is not available. Please state one on the list.")
-                                self.msgLayout.addWidget(MyWidget("That time is not available. Please state one on the list."))
+                                Logging.write("User", "That time is not available. Please state one on the list. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("That time is not available. Please state one on the list. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_movie_time.mp3")
                                 misunderstands += 1
                                 # Movie time does not exist
@@ -826,10 +892,21 @@ class Ui_Form(object):
 
                         confidence = 0
 
-                        while confidence < 0:
+                        while confidence <= 0:
                             userInput = None
                             while userInput is None:
                                 userInput = self.rerun()
+
+                            Logging.write("User", userInput)
+                            self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
+
+                            if "cancel" in userInput.lower() or "stop" in userInput.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
 
                             # Need to find intent
                             interpretation = nlu.getInterpretation(userInput)
@@ -838,7 +915,7 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence < 0.0):
+                            if (confidence <= 0.0):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
@@ -906,6 +983,14 @@ class Ui_Form(object):
                             Logging.write("User", show_name)
                             self.msgLayout.addWidget(MyWidget(format(show_name), left=False))
 
+                            if "cancel" in show_name.lower() or "stop" in show_name.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
+
                             for listing in listings:
                                 tokens = show_name.lower().split()
                                 for token in tokens:
@@ -918,8 +1003,8 @@ class Ui_Form(object):
 
                             else:
                                 # show does not exist
-                                Logging.write("System", "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that TV show. Please choose from one of the listings I found."))
+                                Logging.write("System", "I'm sorry, I didn't find that TV show. Please choose from one of the listings I found. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that TV show. Please choose from one of the listings I found. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_show_name.mp3")
                                 misunderstands += 1
 
@@ -937,11 +1022,50 @@ class Ui_Form(object):
                             Logging.write("User", show_day)
                             self.msgLayout.addWidget(MyWidget(format(show_day), left=False))
 
+                            if "cancel" in show_day.lower() or "stop" in show_day.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
+
+                            temp_day = ""
+
+                            show_day_tokens = show_day.split()
+
+                            if "January" in show_day_tokens:
+                                temp_day += "Jan "
+                            elif "February" in show_day_tokens:
+                                temp_day += "Feb "
+                            elif "March" in show_day_tokens:
+                                temp_day += "Mar "
+                            elif "April" in show_day_tokens:
+                                temp_day += "Apr "
+                            elif "May" in show_day_tokens:
+                                temp_day += "May "
+                            elif "June" in show_day_tokens:
+                                temp_day += "Jun "
+                            elif "July" in show_day_tokens:
+                                temp_day += "Jul "
+                            elif "August" in show_day_tokens:
+                                temp_day += "Aug "
+                            elif "September" in show_day_tokens:
+                                temp_day += "Sep "
+                            elif "October" in show_day_tokens:
+                                temp_day += "Oct "
+                            elif "November" in show_day_tokens:
+                                temp_day += "Nov "
+                            elif "December" in show_day_tokens:
+                                temp_day += "Dec "
+
+                            temp_day += show_day_tokens[len(show_day_tokens)-1]
+
                             for listing in listings:
                                 tokens = show_name.lower().split()
                                 for token in tokens:
                                     if token in listing.name.lower():
-                                        if show_day == listing.day:
+                                        if temp_day == listing.date:
                                             show_day_exists = True
                                             break
 
@@ -949,8 +1073,8 @@ class Ui_Form(object):
                                 break
 
                             else:
-                                Logging.write("System", "I'm sorry, I didn't find that there is a showing on that day. Please say another day.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing on that day. Please say another day."))
+                                Logging.write("System", "I'm sorry, I didn't find that there is a showing on that day. Please say another day. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing on that day. Please say another day. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_show_day.mp3")
                                 misunderstands += 1
 
@@ -968,6 +1092,14 @@ class Ui_Form(object):
                             Logging.write("User", show_time)
                             self.msgLayout.addWidget(MyWidget(format(show_time), left=False))
 
+                            if "cancel" in show_time.lower() or "stop" in show_time.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
+
                             show_time = self.decipherTime(show_time)
 
                             event = None
@@ -975,7 +1107,7 @@ class Ui_Form(object):
                                 tokens = show_name.lower().split()
                                 for token in tokens:
                                     if token in listing.name.lower():
-                                        if show_day == listing.day:
+                                        if show_day == listing.date:
                                             if show_time == listing.time:
                                                 show_time_exists = True
                                                 event = listing
@@ -985,8 +1117,8 @@ class Ui_Form(object):
                                 break
 
                             else:
-                                Logging.write("System", "I'm sorry, I didn't find that there is a showing at that time. Please say another time.")
-                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing at that time. Please say another time."))
+                                Logging.write("System", "I'm sorry, I didn't find that there is a showing at that time. Please say another time. You can also cancel what I am doing.")
+                                self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't find that there is a showing at that time. Please say another time. You can also cancel what I am doing."))
                                 playsound("packages/audio_files/invalid_show_time.mp3")
                                 misunderstands += 1
 
@@ -1001,10 +1133,21 @@ class Ui_Form(object):
 
                         confidence = 0
 
-                        while confidence < 0:
+                        while confidence <= 0:
                             userInput = None
                             while userInput is None:
                                 userInput = self.rerun()
+
+                            Logging.write("User", userInput)
+                            self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
+
+                            if "cancel" in userInput.lower() or "stop" in userInput.lower():
+                                Logging.write("System",
+                                              "Okay, I've stopped what I was doing. What do you want to do now?")
+                                self.msgLayout.addWidget(
+                                    MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                playsound("packages/audio_files/cancellation.mp3")
+                                return
 
                             # Need to find intent
                             interpretation = nlu.getInterpretation(userInput)
@@ -1013,7 +1156,7 @@ class Ui_Form(object):
                             # Incorporate confidence here
 
                             confidence = interpretation["intent"]["confidence"]
-                            if (confidence < 0.0):
+                            if (confidence <= 0.0):
                                 # print("Sorry, could you rephrase that?")
                                 Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                 self.msgLayout.addWidget(MyWidget("I'm sorry, I didn't get that. Can you rephrase that?"))
@@ -1077,13 +1220,58 @@ class Ui_Form(object):
                                 Logging.write("User", event_day)
                                 self.msgLayout.addWidget(MyWidget(format(event_day), left=False))
 
+                                if "cancel" in event_day.lower() or "stop" in event_day.lower():
+                                    Logging.write("System",
+                                                  "Okay, I've stopped what I was doing. What do you want to do now?")
+                                    self.msgLayout.addWidget(
+                                        MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                    playsound("packages/audio_files/cancellation.mp3")
+                                    return
+
+                                temp_day = ""
+
+                                event_day_tokens = event_day.split()
+
+                                if "January" in event_day_tokens:
+                                    temp_day += "Jan "
+                                elif "February" in event_day_tokens:
+                                    temp_day += "Feb "
+                                elif "March" in event_day_tokens:
+                                    temp_day += "Mar "
+                                elif "April" in event_day_tokens:
+                                    temp_day += "Apr "
+                                elif "May" in event_day_tokens:
+                                    temp_day += "May "
+                                elif "June" in event_day_tokens:
+                                    temp_day += "Jun "
+                                elif "July" in event_day_tokens:
+                                    temp_day += "Jul "
+                                elif "August" in event_day_tokens:
+                                    temp_day += "Aug "
+                                elif "September" in event_day_tokens:
+                                    temp_day += "Sep "
+                                elif "October" in event_day_tokens:
+                                    temp_day += "Oct "
+                                elif "November" in event_day_tokens:
+                                    temp_day += "Nov "
+                                elif "December" in event_day_tokens:
+                                    temp_day += "Dec "
+
+                                temp_day += event_day_tokens[len(event_day_tokens) - 1]
+
+                                for temp_event in events:
+                                    if temp_day == temp_event.date:
+                                        event_day_exists = True
+                                        break
+
                                 if event_day_exists:
                                     break
                                 else:
-                                    Logging.write("System", "You have no event at on that date. Please state another date.")
-                                    self.msgLayout.addWidget(MyWidget("You have no event on that date. Please state another date."))
+                                    Logging.write("System", "You have no event at on that date. Please state another date. You can also cancel what I am doing.")
+                                    self.msgLayout.addWidget(MyWidget("You have no event on that date. Please state another date. You can also cancel what I am doing."))
                                     playsound("packages/audio_files/invalid_event_day.mp3")
                                     misunderstands += 1
+                                    event_day = None
 
 
                             #print("Ask for time")
@@ -1102,16 +1290,31 @@ class Ui_Form(object):
                                 Logging.write("User", event_time)
                                 self.msgLayout.addWidget(MyWidget(format(event_time), left=False))
 
+                                if "cancel" in event_time.lower() or "stop" in event_time.lower():
+                                    Logging.write("System",
+                                                  "Okay, I've stopped what I was doing. What do you want to do now?")
+                                    self.msgLayout.addWidget(
+                                        MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                    playsound("packages/audio_files/cancellation.mp3")
+                                    return
+
                                 event_time = self.decipherTime(event_time)
+
+                                for temp_event in events:
+                                    if temp_day == temp_event.date:
+                                        if event_time == temp_event.time:
+                                            event_time_exists = True
+                                            break
 
                                 if event_time_exists:
                                     break
 
                                 else:
-                                    Logging.write("System", "You have no event at that time. Please state another time.")
-                                    self.msgLayout.addWidget(MyWidget("You have no event at that time. Please state another time."))
+                                    Logging.write("System", "You have no event at that time. Please state another time. You can also cancel what I am doing.")
+                                    self.msgLayout.addWidget(MyWidget("You have no event at that time. Please state another time. You can also cancel what I am doing."))
                                     playsound("packages/audio_files/invalid_event_time.mp3")
                                     misunderstands += 1
+                                    event_time = None
 
                             output = GenerateAudio.generate("confirm_deletion", entities=[event_day, event_time], num=num)
                             Logging.write("System", output)
@@ -1123,17 +1326,28 @@ class Ui_Form(object):
 
                             confidence = 0
 
-                            while confidence < 0:
+                            while confidence <= 0:
                                 userInput = None
                                 while userInput is None:
                                     userInput = self.rerun()
+
+                                Logging.write("User", userInput)
+                                self.msgLayout.addWidget(MyWidget(format(userInput), left=False))
+
+                                if "cancel" in userInput.lower() or "stop" in userInput.lower():
+                                    Logging.write("System",
+                                                  "Okay, I've stopped what I was doing. What do you want to do now?")
+                                    self.msgLayout.addWidget(
+                                        MyWidget("Okay, I've stopped what I was doing. What do you want to do now?"))
+                                    playsound("packages/audio_files/cancellation.mp3")
+                                    return
 
                                 # Need to find intent
                                 interpretation = nlu.getInterpretation(userInput)
                                 intent = interpretation["intent"]["name"]
 
                                 confidence = interpretation["intent"]["confidence"]
-                                if (confidence < 0.0):
+                                if (confidence <= 0.0):
                                     # print("Sorry, could you rephrase that?")
                                     Logging.write("System", "I'm sorry, I didn't get that. Can you rephrase that?")
                                     self.msgLayout.addWidget(
@@ -1183,9 +1397,13 @@ class Ui_Form(object):
                 # Check time every time after user hits speak button and finished
                 reminder = CalendarSystem.checkTime()
                 if type(reminder) is not int:
-                     print("Reminder!")
-
-
+                    # You have an event coming up in 30 minutes to watch [name] on [channel_name]
+                    output = GenerateAudio.generate(intent="reminder", entities=[reminder.name, reminder.channel], num=num)
+                    Logging.write("System", output)
+                    self.msgLayout.addWidget(MyWidget(output))
+                    path = "audio_files/temp" + str(num) + ".mp3"
+                    playsound(path)
+                    num += 1
 
             except sr.UnknownValueError:
                 print("Oops! Didn't catch that")
