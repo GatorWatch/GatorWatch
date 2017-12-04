@@ -30,4 +30,4 @@ Note: The project will only encompass movies and TV shows that are not part of s
 + pyqt5
 + playsound
 + openpyxl
-install above packages with pip install #packagename
++ install above packages with pip install #packagename
