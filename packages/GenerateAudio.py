@@ -210,7 +210,7 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/invalid_event_time.mp3")
 
-    text = "Okay, the event has been deleted from your calendar."
+    text = "Okay, the event has been deleted from your calendar. What else do you want to do?"
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/event_deleted.mp3")
 
@@ -305,6 +305,21 @@ def generate(intent, entities, num):
         output += entities[0]   # Event name
         output += scripts["calendar_overlap2"]
 
+    elif intent == "no_movie" and entities is not None:
+        output += scripts["no_movie"]
+        output += entities[0]
+        output += "."
+
+    elif intent == "reminder" and entities is not None:
+        output += scripts["reminder1"]
+        output += entities[0]   # Event name
+        output += scripts["reminder2"]
+        output += entities[1]   # Event channel/location
+        output += "."
+
+    else:
+        return
+
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
     path = "audio_files/temp" + str(num) + ".mp3"
@@ -341,8 +356,11 @@ scripts["confirm_deletion1"] = "Okay, so you want to delete the event on "
 scripts["confirm_deletion2"] = " at "
 scripts["confirm_deletion3"] = " . Is that correct?"
 scripts["no_tv_shows"] = "I'm sorry, I couldn't find anything about "
+scripts["no_movie"] = "I'm sorry, I couldn't find anything on "
 scripts["calendar_overlap1"] = "There is already an event to watch "
 scripts["calendar_overlap2"] = " at that time! I cannot save this event"
+scripts["reminder1"] = "You have an event coming up in 30 minutes to watch "
+scripts["reminder2"] = " on "
 #print(scripts["movie_info"])
 
 #generate("There is a showing on November 27 at 9:30 AM.")
