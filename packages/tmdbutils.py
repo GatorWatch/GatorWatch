@@ -31,9 +31,7 @@ class Movie:
         self.voteAverage = voteAverage
         self.overview = overview
         self.posterURL += posterURL
-        self.genreids = genreids
-        for g in genreids:
-            self.genreStrings.append(genreIdMap[g]) 
+        self.genreids = genreids 
 
 class Tv:
     name = None
@@ -51,9 +49,6 @@ class Tv:
         self.overview = overview
         self.posterURL += posterURL
         self.genreids = genreids
-        for genre in genreids:
-            self.genreStrings.append(genreIdMap[genre]) 
-
 
 # @description
 #  Gets the genre ID associated with a string
