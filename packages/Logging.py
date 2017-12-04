@@ -5,15 +5,15 @@ import os
 def write(speaker, utterance):
     global text
     global f
-    f = open(text, "w+")
+    #f = open(text, "w+")
     curr_time = time.time()
     delta = float(curr_time) - float(start_time)
     delta = str(delta)
     text = speaker + ": " + utterance + " - " + delta + "\r\n"
     f.write(text)
-    f.close()
+    #f.close()
 
-def end():
+def end(negations, misunderstands, timeouts):
     global text
     global f
     f = open(text, "w+")
@@ -23,7 +23,16 @@ def end():
 
     delta = float(end_time) - float(start_time)
     delta = str(delta)
-    line = "Elapsed time: " + delta
+    line = "Elapsed time: " + delta + "\r\n"
+    f.write(line)
+
+    line = "Negations: " + str(negations) + "\r\n"
+    f.write(line)
+
+    line = "Misunderstands: " + str(misunderstands) + "\r\n"
+    f.write(line)
+
+    line = "Timeouts: " + str(timeouts) + "\r\n"
     f.write(line)
     f.close()
 
@@ -44,4 +53,4 @@ start_time = time.time()
 f = open(text,"w+")
 curr_time = "Start Seconds: " + str(start_time) + "\r\n"
 f.write(curr_time)
-f.close()
+#f.close()

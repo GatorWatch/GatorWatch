@@ -225,17 +225,24 @@ def generate_presets2():
 
 # Generates an audio file given the intent and entities
 # Returns a string of what the audio file says
-def generate(intent, entities):
+def generate(intent, entities, num):
     output = ""
     if intent == "lookup_details" and entities is not None:
         output += scripts["lookup_details"] # Name
         output += entities[0]
 
     elif intent == "show_tv" and entities is not None:
+        months = {"Jan": "January", "Feb": "February", "Mar": "March", "Apr": "April", "May": "May", "Jun": "June", "Jul": "July",
+                  "Aug": "August", "Sep": "September", "Oct": "October", "Nov": "November", "Dec": "December"}
         output += scripts["show_tv1"]
         output += entities[0]   # TV show name
         output += scripts["show_tv2"]
         output += entities[1]   # time
+        output += scripts["show_tv3"]
+
+        tokens = entities[2].split()
+        output += months[tokens[0]]   # month
+        output += " " + tokens[1]
         output += "."
 
     elif intent == "add_to_calendar" and entities is not None:
@@ -300,7 +307,8 @@ def generate(intent, entities):
 
     language = "en"
     audio = gTTS(text=output, lang=language, slow=False)
-    audio.save("audio_files/temp.mp3")
+    path = "audio_files/temp" + str(num) + ".mp3"
+    audio.save(path)
     #playsound("audio_files/temp.mp3")
     return output
 
@@ -316,6 +324,7 @@ scripts["movie_more_info1"] = "Okay, it has a rating of "
 scripts["movie_more_info2"] = ". The description is: "
 scripts["show_tv1"] = "Okay, here are listings for "
 scripts["show_tv2"] = ". There is a showing at "
+scripts["show_tv3"] = " on "
 scripts["add_to_calendar1"] = "Okay, "
 scripts["add_to_calendar2"] = " has been added to your calendar."
 scripts["remove_from_calendar1"] = "Okay, "
