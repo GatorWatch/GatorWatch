@@ -2,6 +2,908 @@
   "rasa_nlu_data": {
     "common_examples": [
       {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "show me a movie"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "See ya later"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "bye"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "Goodbye"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "Have a nice day"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "See you later"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "Goodbye thanks alot"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "that will be all"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "that will be all thank you"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "bye bye"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "see ya later man"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "peace out"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "peace out home skillet"
+      },
+      {
+        "intent": "bye",
+        "entities": [],
+        "text": "peace out dog"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "I want to see a movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "I would like to see a movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "I am in the mood for a movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 10,
+            "end": 16,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ],
+        "text": "show me a horror movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 10,
+            "end": 16,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ],
+        "text": "show me a comedy movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 28,
+            "end": 32,
+            "value": "action",
+            "entity": "genre"
+          }
+        ],
+        "text": "I want to see a movie with action"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 14,
+            "end": 19,
+            "value": "action",
+            "entity": "genre"
+          }
+        ],
+        "text": "A movie with action"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 10,
+            "end": 16,
+            "value": "action",
+            "entity": "genre"
+          }
+        ],
+        "text": "I am in the mood for an action movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 18,
+            "end": 23,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ],
+        "text": "I'm looking for a funny movie"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "show me local movies"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "I am in the mood for some tv"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "show me some local movies"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "ok show me some local movies"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "Alright what are some local movies"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "what movies are playing near me"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 18,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ],
+        "text": "let me see a scary movie"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "whats on tv"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "I want to see some tv shows"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "what can I see on tv"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "what can I see on tv right now"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "I would like to watch some tv"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "show me some tv listings"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "Give me a list of tv shows"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "what is playing on theaters now"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 34,
+            "value": "stranger things",
+            "entity": "tv_show"
+          }
+        ],
+        "text": "show me more about stranger things"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "whats on tv right now"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "action",
+            "entity": "genre"
+          }
+        ],
+        "text": "find me an action film"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 9,
+            "end": 15,
+            "value": "batman",
+            "entity": "movie"
+          }
+        ],
+        "text": "lookup a batman movie"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "what's airing on tv"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 17,
+            "end": 25,
+            "value": "romance",
+            "entity": "genre"
+          }
+        ],
+        "text": "put on something romantic"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "are there any good movies playing in theaters"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 16,
+            "value": "law and order",
+            "entity": "tv_show"
+          }
+        ],
+        "text": "is law and order playing right now"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 14,
+            "end": 26,
+            "value": "Interstellar",
+            "entity": "movie"
+          }
+        ],
+        "text": "tell me about Interstellar"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 16,
+            "end": 21,
+            "value": "Batman",
+            "entity": "movie"
+          }
+        ],
+        "text": "I want to see a Batman movie"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 16,
+            "end": 23,
+            "value": "Superman",
+            "entity": "movie"
+          }
+        ],
+        "text": "I want to see a Superman movie"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 34,
+            "end": 39,
+            "value": "Batman",
+            "entity": "movie"
+          }
+        ],
+        "text": "I would like to see a movie about Batman"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "what should I watch"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "whats the best movie out right now"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "what is a movie with good ratings"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "what movies did well in the box office"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "what movies made a lot of money"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 23,
+            "end": 35,
+            "value": "documentary",
+            "entity": "genre"
+          }
+        ],
+        "text": "I really want to see a documentary"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 16,
+            "end": 26,
+            "value": "Spiderman",
+            "entity": "movie"
+          }
+        ],
+        "text": "how is that new Spiderman"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 16,
+            "end": 26,
+            "value": "Spiderman",
+            "entity": "movie"
+          }
+        ],
+        "text": "I want to see Batman"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "show me popular movies"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [],
+        "text": "show me the top movies"
+      },
+      {
+        "intent": "show_local",
+        "entities": [],
+        "text": "show local movies"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 12,
+            "value": "Star Trek",
+            "entity": "tv_show"
+          }
+        ],
+        "text": "Is Star Trek on?"
+      },
+      {
+        "intent": "view_calendar",
+        "entities": [],
+        "text": "pull up my calendar"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "what can you do"
+      },
+      {
+        "intent": "add_to_calendar",
+        "entities": [],
+        "text": "add it to my calendar"
+      },
+      {
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 7,
+            "end": 21,
+            "value": "the lego movie",
+            "entity": "movie"
+          }
+        ],
+        "text": "remove the lego movie from my calendar"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "what does calendar do"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "what can calendar do"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "tell me more about calendar"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "show me details about calendar"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "what are the commands for calendar"
+      },
+      {
+        "intent": "calendar_question",
+        "entities": [],
+        "text": "what is calendar capable of"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "yes"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "yep"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "yeah"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "indeed"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "that's right"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "ok"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "great"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "right, thank you"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "correct"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "great choice"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "sounds really good"
+      },
+      {
+        "intent": "affirm",
+        "entities": [],
+        "text": "sounds good"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "no"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "nope"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "no please"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "no thank you"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "not that"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "negative"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "not that one"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "that's not right"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "that's not it"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "that's incorrect"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "wrong"
+      },
+      {
+        "intent": "deny",
+        "entities": [],
+        "text": "not that choice"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "help"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "tell me more about your commands"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "tell me more about what you can do"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "I like to know more about you"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "tell me what i can do"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "what are your commands"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "what are the available commands"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "i do not know what to do"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "i am lost on what to do"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "i am lost"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "what can you do"
+      },
+      {
+        "intent": "show_instructions",
+        "entities": [],
+        "text": "commands"
+      },
+      {
+        "intent": "view_calendar",
+        "entities": [],
+        "text": "what do I have scheduled"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 22,
+            "end": 32,
+            "value": "big hero 6",
+            "entity": "movie"
+          }
+        ],
+        "text": "show me details about big hero 6"
+      },
+      {
+        "intent": "add_to_calendar",
+        "entities": [],
+        "text": "put it on there"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "let me see the tv listings"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 3,
+            "end": 6,
+            "value": "CSI",
+            "entity": "tv_show"
+          }
+        ],
+        "text": "is CSI playing soon"
+      },
+      {
+        "intent": "remove_from_calendar",
+        "entities": [],
+        "text": "remove it from my calendar"
+      },
+      {
+        "intent": "remove_from_calendar",
+        "entities": [],
+        "text": "take it off"
+      },
+      {
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 7,
+            "end": 11,
+            "value": "Thor",
+            "entity": "movie"
+          }
+        ],
+        "text": "delete Thor from my calendar"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 15,
+            "end": 20,
+            "value": "drama",
+            "entity": "genre"
+          }
+        ],
+        "text": "what is a good drama"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 22,
+            "end": 29,
+            "value": "fantasy",
+            "entity": "genre"
+          }
+        ],
+        "text": "is there a movie in a fantasy world"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 29,
+            "end": 37,
+            "value": "thriller",
+            "entity": "genre"
+          }
+        ],
+        "text": "my friends are looking for a thriller"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 14,
+            "value": "war",
+            "entity": "genre"
+          }
+        ],
+        "text": "bring me a war movie"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 11,
+            "end": 17,
+            "value": "science fiction",
+            "entity": "genre"
+          }
+        ],
+        "text": "what about sci fi?"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "throw up the tv listings"
+      },
+      {
+        "intent": "show_tv",
+        "entities": [],
+        "text": "let me see if something is playing"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 32,
+            "value": "Indiana Jones",
+            "entity": "movie"
+          }
+        ],
+        "text": "tell me more about Indiana Jones"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 28,
+            "value": "Suburbicon",
+            "entity": "movie"
+          }
+        ],
+        "text": "tell me more about Suburbicon"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 31,
+            "end": 38,
+            "value": "Jumanji",
+            "entity": "movie"
+          }
+        ],
+        "text": "I would like to know more about Jumanji"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 29,
+            "end": 56,
+            "value": "The Killing of a Sacred Deer",
+            "entity": "movie"
+          }
+        ],
+        "text": "Can I see more details about The Killing of a Sacred Deer"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 29,
+            "end": 50,
+            "value": "Spider-Man: Homecoming",
+            "entity": "movie"
+          }
+        ],
+        "text": "Can I see more details about Spider-Man: Homecoming"
+      },
+      {
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 29,
+            "end": 35,
+            "value": "Sleight",
+            "entity": "movie"
+          }
+        ],
+        "text": "Can I see more details about Sleight"
+      },
+      {
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 18,
+            "value": "action",
+            "entity": "genre"
+          }
+        ],
+        "text": "whats a good action movie"
+      },
+      {
         "text": "show me a movie",
         "intent": "recommend_movie",
         "entities": []
@@ -533,6 +1435,474 @@
             "entity": "genre"
           }
         ]
+      },
+      {
+        "text": "tell me more about superman",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 19,
+            "end": 27,
+            "value": "superman",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to see local movies",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I want to add dunkirk to my calendar",
+        "intent": "add_to_calendar",
+        "entities": [
+          {
+            "start": 14,
+            "end": 21,
+            "value": "dunkirk",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to know more about the godfather",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 26,
+            "end": 39,
+            "value": "the godfather",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "I want to know if Family Guy is playing soon",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 18,
+            "end": 28,
+            "value": "Family Guy",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need to know if Friends is on",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 18,
+            "end": 25,
+            "value": "Friends",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need help",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what channel is Seinfield on",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 16,
+            "end": 25,
+            "value": "Seinfield",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I need to know what is playing near me",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I need to know more about a movie",
+        "intent": "lookup_details",
+        "entities": []
+      },
+      {
+        "text": "I would like to see mystery",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 20,
+            "end": 27,
+            "value": "mystery",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "I would like something funny or actiony",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 32,
+            "end": 39,
+            "value": "action",
+            "entity": "genre"
+          },
+          {
+            "start": 23,
+            "end": 28,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "go to a scifi movie",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 8,
+            "end": 13,
+            "value": "scifi",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "I like animations",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 7,
+            "end": 17,
+            "value": "animations",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "i'm looking for lost",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 16,
+            "end": 20,
+            "value": "lost",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "will legally blonde be playing tonight",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 5,
+            "end": 19,
+            "value": "legally blonde",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "any chance family feud is on tv",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 11,
+            "end": 22,
+            "value": "family feud",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "whats playing in theaters near me",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "search for chopped",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 11,
+            "end": 18,
+            "value": "chopped",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "I want to find out more about Moana",
+        "intent": "lookup_details",
+        "entities": [
+          {
+            "start": 30,
+            "end": 35,
+            "value": "Moana",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "view my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "I want to pull up my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "whats a good thriller",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 13,
+            "end": 21,
+            "value": "thriller",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "take coco off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 9,
+            "value": "coco",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "goodbye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "good bye",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I'm finished",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "farewell",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "see you later",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "I am done",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "close",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "shutdown",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "show me my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "let me see my calendar please",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "pull up my schedule",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "can you tell me what is on my calendar",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "take wonder off my calendar",
+        "intent": "remove_from_calendar",
+        "entities": [
+          {
+            "start": 5,
+            "end": 11,
+            "value": "wonder",
+            "entity": "movie"
+          }
+        ]
+      },
+      {
+        "text": "can you tell me if jeopardy is on tonight",
+        "intent": "show_tv",
+        "entities": [
+          {
+            "start": 19,
+            "end": 27,
+            "value": "jeopardy",
+            "entity": "tv_show"
+          }
+        ]
+      },
+      {
+        "text": "let me view my calendar so far",
+        "intent": "view_calendar",
+        "entities": []
+      },
+      {
+        "text": "im done for now",
+        "intent": "bye",
+        "entities": []
+      },
+      {
+        "text": "show me something terrifying",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 18,
+            "end": 28,
+            "value": "horror",
+            "entity": "genre"
+          }
+        ]
+      },
+      {
+        "text": "show me whats playing nearby",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "show me what is playing in theaters right now",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "let me see what films are playing tonight",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "are any good movies playing right now",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "what is there to see tonight",
+        "intent": "show_local",
+        "entities": []
+      },
+      {
+        "text": "I'm not sure what I'm suppose to do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what is the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can I do with the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "how do I use the calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "tell me about this calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what is a calendar",
+        "intent": "show_calendar_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can I do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what am I allowed to do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what can you do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "help me do something",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "I want to know more about this system",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "what else can I do",
+        "intent": "show_instructions",
+        "entities": []
+      },
+      {
+        "text": "I want to search a tv show",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "I want to lookup a show",
+        "intent": "show_tv",
+        "entities": []
+      },
+      {
+        "text": "find me something that will make me laugh",
+        "intent": "recommend_movie",
+        "entities": [
+          {
+            "start": 36,
+            "end": 41,
+            "value": "comedy",
+            "entity": "genre"
+          }
+        ]
       }
     ],
     "entity_synonyms": [
@@ -547,7 +1917,8 @@
       {
         "value": "tv_show",
         "synonyms": [
-          "TV,   tv show",
+          "TV",
+          "tv show",
           "show",
           "tv episode",
           "episode"
@@ -558,6 +1929,13 @@
         "synonyms": [
           "sci fi",
           "scifi"
+        ]
+      },
+      {
+        "value": "information",
+        "synonyms": [
+          "info",
+          "details"
         ]
       }
     ],

@@ -21,6 +21,26 @@ class ShowListing:
         self.time = time
 
 
+class Reminder:
+    name = ""
+    episode_name = ""
+    episode = ""
+    description = ""
+    channel = ""
+    date = ""
+    time = ""
+    index = 0
+
+    def __init__(self, name, episode_name, episode, description, channel, date, time, index):
+            self.name = name
+            self.episode_name = episode_name
+            self.episode = episode
+            self.description = description
+            self.channel = channel
+            self.date = date
+            self.time = time
+            self.index = index
+
 # When the user wants to save a listing, save it to the calendar
 def saveCalendar(listing):
     i = 2
@@ -28,7 +48,7 @@ def saveCalendar(listing):
     while ws.cell(row=i, column=1).value is not None:
         # There is already an event at that time - cannot save the given event
         if ws.cell(row=i, column=6).value == listing.date and ws.cell(row=i, column=7) == listing.time:
-            return False
+            return ws.cell(row=i,column=1).value
         i += 1
 
     ws.cell(row=i, column=1).value = listing.name
@@ -39,7 +59,7 @@ def saveCalendar(listing):
     ws.cell(row=i, column=6).value = listing.date
     ws.cell(row=i, column=7).value = listing.time
     wb.save(filename="calendar_times.xlsx")
-    return True
+    return "True"   # Returning a string of True in case there is an issue with equality operators
 
 # Return array of all the saved listings
 def getCalendar():
@@ -62,39 +82,14 @@ def getCalendar():
 
     return array
 
-# Delete an event given either the name or the listing object. If given the index, delete the event at given index
-def deleteEvent(name, i=0):
-    # If the passed value is not a string (it must be a ShowListing object then)
-    if type(name) is not str:
-        name = name.name
-
-    # An index was not given
-    if i == 0:
-        i = 2
-
-    # Index was given to delete
-    else:
-        ws.cell(row=i, column=1).value = None
-        ws.cell(row=i, column=2).value = None
-        ws.cell(row=i, column=3).value = None
-        ws.cell(row=i, column=4).value = None
-        ws.cell(row=i, column=5).value = None
-        ws.cell(row=i, column=6).value = None
-        ws.cell(row=i, column=7).value = None
-        wb.save("calendar_times.xlsx")
-        return True
-
-    fail = True
+# Delete an event given the day and time
+def deleteEvent(day, time):
+    i = 1
     while ws.cell(row=i, column=1).value is not None:
-        if ws.cell(row=i, column=1).value == name:
-            fail = False
+        if ws.cell(row=i, column=6).value == day and ws.cell(row=i, column=7).value == time:
             break
-        fail = True
         i += 1
 
-    if fail:
-        print("Did not find listing to delete")
-        return False
 
     # Delete the listing
     ws.cell(row=i, column=1).value = None
@@ -104,6 +99,10 @@ def deleteEvent(name, i=0):
     ws.cell(row=i, column=5).value = None
     ws.cell(row=i, column=6).value = None
     ws.cell(row=i, column=7).value = None
+
+    if ws.cell(row=i+1, column=1).value == None:
+        wb.save(filename="calendar_times.xlsx")
+        return True
 
     i += 1
 
@@ -166,6 +165,7 @@ def checkTime():
 
         time = time.split(":")
         hour = time[0]
+        hour = int(hour)
         minutes = time[1]
 
         if minutes[2:] == "pm" and hour != 12:
@@ -191,13 +191,16 @@ def checkTime():
             channel = ws.cell(row=i, column=5).value
             date = ws.cell(row=i, column=6).value
             time = ws.cell(row=i, column=7).value
-            listing = ShowListing(name, episode_name, episode_number, description, channel, date, time)
-            return listing
+            temp_reminder = Reminder(name, episode_name, episode_number, description, channel, date, time, i)
+            return temp_reminder
 
         i += 1
 
-    return False
+    return 0
 
 
 wb = load_workbook("calendar_times.xlsx")
 ws = wb["Sheet1"]
+
+#checking = checkTime()
+#print(checking)
