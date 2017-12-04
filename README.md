@@ -27,4 +27,7 @@ Note: The project will only encompass movies and TV shows that are not part of s
 + gTTS
 + tmdbsimple
 + BeautifulSoup
-+ tkinter
++ pyqt5
++ playsound
++ openpyxl
+install above packages with pip install #packagename
