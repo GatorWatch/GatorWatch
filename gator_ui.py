@@ -265,7 +265,7 @@ class Ui_Form(object):
     def decipherTime(self, input_audio):
         input_audio = input_audio.lower()
         hour = ""
-        if "o'clock" in input_audio:
+        if "o'clock" in input_audio or "o clock" in input_audio or "clock " in input_audio:
             i = 0
             while input_audio[i] != " ":
                 hour += input_audio[i]
@@ -480,7 +480,6 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
 
                             self.tableMode = 3
@@ -490,7 +489,6 @@ class Ui_Form(object):
                             self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
                             self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
                             self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                             self.currRow+=1
 
                             self.tableMode = 3   
@@ -525,7 +523,6 @@ class Ui_Form(object):
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
                                 self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
                                 self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
                                 self.currRow+=1
                         else:
                             self.tableWidget.clear()
@@ -534,7 +531,6 @@ class Ui_Form(object):
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
                                 self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
                                 self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
                                 self.currRow+=1
                         self.tableWidget.resizeColumnsToContents()
 
@@ -1362,7 +1358,7 @@ class Ui_Form(object):
 
 
                             if intent == "affirm":
-                                CalendarSystem.deleteEvent(event_day, event_time)
+                                CalendarSystem.deleteEvent(temp_day, event_time)
                                 Logging.write("System", "Okay, the event has been deleted from your calendar.")
                                 self.msgLayout.addWidget(MyWidget("Okay, the event has been deleted from your calendar."))
                                 playsound("packages/audio_files/event_deleted.mp3")
@@ -1394,6 +1390,7 @@ class Ui_Form(object):
                     Logging.write("System", "Okay, see you later!")
                     self.msgLayout.addWidget(MyWidget("Okay, see you later!"))
                     playsound("packages/audio_files/bye.mp3")
+                    Logging.end(negations, misunderstands, timeouts)
                     sys.exit()
 
                 previousIntent = intent

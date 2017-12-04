@@ -84,7 +84,7 @@ def getCalendar():
 
 # Delete an event given the day and time
 def deleteEvent(day, time):
-    i = 0
+    i = 1
     while ws.cell(row=i, column=1).value is not None:
         if ws.cell(row=i, column=6).value == day and ws.cell(row=i, column=7).value == time:
             break
@@ -99,6 +99,10 @@ def deleteEvent(day, time):
     ws.cell(row=i, column=5).value = None
     ws.cell(row=i, column=6).value = None
     ws.cell(row=i, column=7).value = None
+
+    if ws.cell(row=i+1, column=1).value == None:
+        wb.save(filename="calendar_times.xlsx")
+        return True
 
     i += 1
 
