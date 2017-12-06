@@ -230,6 +230,10 @@ def generate_presets2():
     audio = gTTS(text=text, lang=language, slow=False)
     audio.save("audio_files/not_deleting_event.mp3")
 
+    text = "I'm sorry, I couldn't request any data for movies."
+    audio = gTTS(text=text, lang=language, slow=False)
+    audio.save("audio_files/no_movies_found.mp3")
+
 
 # Generates an audio file given the intent and entities
 # Returns a string of what the audio file says
