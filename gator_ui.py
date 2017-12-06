@@ -352,104 +352,112 @@ class Ui_Form(object):
 
                 # Display list of popular movies
                 elif (intent == "recommend_movie"):
-                    #print tmdb_movie table header
-                    if (self.currRow == 499):
-                        self.tableWidget.clear()
-                        self.currRow = 0
-                        if (self.tableMode != 3):
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
-                            self.currRow+=1
-
-                            self.tableMode = 3
-                    else:    
-                        if (self.tableMode != 3):
-                            self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
-                            self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
-                            self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
-                            self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
-                            self.currRow+=1
-                            self.tableMode = 3
-
-                    # Attempt to extract genres from the user input
-                    # If we find genres, do a search with that list
-                    # Otherwise return the default popular list
-                    genreStringList = tmdbutils.getGenreStringList()
-                    userGenres = []
-
-                    for item in entities:
-                        if (item["entity"] == "genre" and item["value"].title() in genreStringList):
-                            userGenres.append(item["value"].title())
-
-                    # If no genres specified, do default search
-                    if not userGenres:
-                        popularMovies = tmdbutils.getPopularMovies()
-
-                        # Pick a random movie to say
-                        random.seed()
-                        number = random.randint(0, len(popularMovies))
-                        output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage], num=num)
-                        Logging.write("System", output)
-                        self.msgLayout.addWidget(MyWidget(output))
-
-                        path = "audio_files/temp" + str(num) + ".mp3"
-                        playsound(path)
-                        num += 1
-                        #os.remove("audio_files/temp.mp3")
-
-                        itemLength = len(popularMovies)
-                        #populate table with popularmovies items
-                        if (itemLength+self.currRow < 499):
-                            for movieItem in popularMovies:
-                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                                self.currRow+=1
-                        else:
+                    try:
+                        #print tmdb_movie table header
+                        if (self.currRow == 499):
                             self.tableWidget.clear()
                             self.currRow = 0
-                            for movieItem in popularMovies:
-                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                            if (self.tableMode != 3):
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                                 self.currRow+=1
-                        self.tableWidget.resizeColumnsToContents()
-                    else:
-                        popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
 
-                        random.seed()
-                        number = random.randint(0, len(popularMoviesWithGenres))
-                        output = GenerateAudio.generate(intent="recommend_movie_genre", entities=[userGenres[0], popularMoviesWithGenres[number].title, popularMoviesWithGenres[number].voteAverage], num=num)
-                        Logging.write("System", output)
-                        self.msgLayout.addWidget(MyWidget(output))
-
-                        path = "audio_files/temp" + str(num) + ".mp3"
-                        playsound(path)
-                        num += 1
-
-                        #populate table with popularMoviesWithGenres items
-                        itemLength = len(popularMoviesWithGenres)
-                        if (itemLength+self.currRow < 499):
-                            for movieItem in popularMoviesWithGenres:
-                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                self.tableMode = 3
+                        else:    
+                            if (self.tableMode != 3):
+                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem("Title"))
+                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem("Rating Average"))
+                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem("Summary"))
+                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem("Genres"))
                                 self.currRow+=1
+                                self.tableMode = 3
+
+                        # Attempt to extract genres from the user input
+                        # If we find genres, do a search with that list
+                        # Otherwise return the default popular list
+                        genreStringList = tmdbutils.getGenreStringList()
+                        userGenres = []
+
+                        for item in entities:
+                            if (item["entity"] == "genre" and item["value"].title() in genreStringList):
+                                userGenres.append(item["value"].title())
+
+                        # If no genres specified, do default search
+                        if not userGenres:
+                            popularMovies = tmdbutils.getPopularMovies()
+
+                            # Pick a random movie to say
+                            random.seed()
+                            number = random.randint(0, len(popularMovies))
+
+                            output = GenerateAudio.generate(intent=intent, entities=[popularMovies[number].title, popularMovies[number].voteAverage], num=num)
+                            Logging.write("System", output)
+                            self.msgLayout.addWidget(MyWidget(output))
+
+                            path = "audio_files/temp" + str(num) + ".mp3"
+                            playsound(path)
+                            num += 1
+                            #os.remove("audio_files/temp.mp3")
+
+
+                            itemLength = len(popularMovies)
+                            #populate table with popularmovies items
+                            if (itemLength+self.currRow < 499):
+                                for movieItem in popularMovies:
+                                    self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                    self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                    self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                    self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                    self.currRow+=1
+                            else:
+                                self.tableWidget.clear()
+                                self.currRow = 0
+                                for movieItem in popularMovies:
+                                    self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                    self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                    self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                    self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                    self.currRow+=1
+                            self.tableWidget.resizeColumnsToContents()
                         else:
-                            self.tableWidget.clear()
-                            self.currRow = 0
-                            for movieItem in popularMoviesWithGenres:
-                                self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
-                                self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
-                                self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
-                                self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
-                                self.currRow+=1
-                        self.tableWidget.resizeColumnsToContents()
+                            popularMoviesWithGenres = tmdbutils.getPopularMoviesWithGenre(userGenres)
+
+                            random.seed()
+                            number = random.randint(0, len(popularMoviesWithGenres))
+                            output = GenerateAudio.generate(intent="recommend_movie_genre", entities=[userGenres[0], popularMoviesWithGenres[number].title, popularMoviesWithGenres[number].voteAverage], num=num)
+                            Logging.write("System", output)
+                            self.msgLayout.addWidget(MyWidget(output))
+
+                            path = "audio_files/temp" + str(num) + ".mp3"
+                            playsound(path)
+                            num += 1
+
+                            #populate table with popularMoviesWithGenres items
+                            itemLength = len(popularMoviesWithGenres)
+                            if (itemLength+self.currRow < 499):
+                                for movieItem in popularMoviesWithGenres:
+                                    self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                    self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                    self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                    self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                    self.currRow+=1
+                            else:
+                                self.tableWidget.clear()
+                                self.currRow = 0
+                                for movieItem in popularMoviesWithGenres:
+                                    self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(movieItem.title))
+                                    self.tableWidget.setItem(self.currRow,1, QTableWidgetItem(str(movieItem.voteAverage)))
+                                    self.tableWidget.setItem(self.currRow,2, QTableWidgetItem(movieItem.overview))
+                                    self.tableWidget.setItem(self.currRow,3, QTableWidgetItem(str(movieItem.genreStrings)))
+                                    self.currRow+=1
+                            self.tableWidget.resizeColumnsToContents()
+
+                    except IndexError:
+                        Logging.write("System", "I'm sorry, I couldn't request for movie data.")
+                        self.msgLayout.addWidget(MyWidget("I'm sorry, I couldn't request for movie data."))
+                        # playsound("packages/audio_files/no_movies_found.mp3")
 
                 elif (intent == "lookup_details"):
                     movieToLookup = None
@@ -611,11 +619,13 @@ class Ui_Form(object):
 
                         Logging.write("System", output)
                         self.msgLayout.addWidget(MyWidget(output))
+
                         path = "audio_files/temp" + str(num) + ".mp3"
                         playsound(path)
                         num += 1
                         #os.remove("audio_files/temp.mp3")
                         #populate table with listings items
+
                         if(itemLength+self.currRow < 499):
                             for listing in listings:
                                 self.tableWidget.setItem(self.currRow,0, QTableWidgetItem(listing.name))
@@ -1429,6 +1439,9 @@ class Ui_Form(object):
             pass
 
 if __name__ == '__main__':
+    # print(isUserAdmin())
+    # if(os.path.isfile('audio_files/temp.mp3') == True):
+    #     os.remove("audio_files/temp.mp3")
     app = QApplication(sys.argv)
     r = sr.Recognizer() 
     m = sr.Microphone()
@@ -1441,6 +1454,7 @@ if __name__ == '__main__':
     previousIntent = None
     start = True
 
+
     num = 0
 
     negations = 0
@@ -1451,6 +1465,7 @@ if __name__ == '__main__':
         os.remove("audio_files/temp.mp3")
     except:
         print("No file to remove")
+
 
     ex = App()
     try:
